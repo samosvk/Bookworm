@@ -1,7 +1,7 @@
 # Bookworm
 A tool allowing users to collaborate on creating online textbooks and class documents
 
-### development:
+### Development:
 ###### Django:
 Make sure that pipenv is installed, and run pipenv install. If installation succeeds, run pipenv shell to run the virtual environment.
 
