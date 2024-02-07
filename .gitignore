@@ -1,0 +1,46 @@
+# Django
+__pycache__/
+*.pyc
+*.pyo
+*.pyd
+db.sqlite3
+staticfiles/
+media/
+
+# Virtual Environment
+venv/
+.env/
+Pipfile.lock
+
+# Python bytecode
+*.pyc
+*.pyo
+*.pyd
+
+# Node.js / React
+node_modules/
+.cache/
+build/
+dist/
+yarn-error.log
+
+# Dependency lock files
+yarn.lock
+package-lock.json
+
+# Editor and IDE files
+.vscode/
+.idea/
+
+# OS-specific files
+.DS_Store
+
+# Environment variables
+.env
+
+# Log files
+*.log
+
+# Exclude React build artifacts
+frontend/static/frontend/main.js
+
