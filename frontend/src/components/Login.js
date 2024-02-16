@@ -13,11 +13,9 @@ import LockOutlinedIcon from '@mui/icons-material/LockOutlined';
 import Typography from '@mui/material/Typography';
 import Container from '@mui/material/Container';
 import { createTheme, ThemeProvider } from '@mui/material/styles';
+import { useTheme } from '@mui/material/styles';
 
 
-
-
-const defaultTheme = createTheme();
 
 export default function LogIn() {
   const[loginStatus, setLoginStatus] = useState(undefined);
@@ -58,9 +56,7 @@ export default function LogIn() {
   };
 
   return (
-    <ThemeProvider theme={defaultTheme}>
       <Container component="main" maxWidth="xs">
-        <CssBaseline />
         <Box
           sx={{
             marginTop: 8,
@@ -69,7 +65,7 @@ export default function LogIn() {
             alignItems: 'center',
           }}
         >
-          <Avatar sx={{ m: 1, bgcolor: 'secondary.main' }}>
+          <Avatar sx={{ m: 1, bgcolor: 'primary.main' }}>
             <LockOutlinedIcon />
           </Avatar>
           <Typography component="h1" variant="h5">
@@ -131,7 +127,6 @@ export default function LogIn() {
           </Box>
         </Box>
       </Container>
-    </ThemeProvider>
   );
 }
 
