@@ -24,10 +24,6 @@ export default function Register(){
       event.preventDefault();
       const data = new URLSearchParams( new FormData(event.currentTarget));
       try {
-          // const csrfToken = document.cookie
-          // .split('; ')
-          // .find(row => row.startsWith('csrftoken='))
-          // .split('=')[1];
           const response = await fetch('http://localhost:8000/authenticate/register/',{
               method: 'POST',
               headers: {
@@ -35,7 +31,6 @@ export default function Register(){
               },
               body: data.toString(),
               credentials: 'include',
-              // 'X-CSRFToken': csrfToken
           });
           console.log(response);
           if (response.ok){

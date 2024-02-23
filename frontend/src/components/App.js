@@ -7,8 +7,8 @@ import { BrowserRouter as Router, Route, Routes } from 'react-router-dom';
 import Login from './Login';
 import Register from './Register';
 import Home from './Home';
+import Book from './Book';
 import './App.css';
-
 const theme = createTheme({
     palette: {
         primary: {
@@ -36,6 +36,7 @@ export default function App() {
                     <Route path="/" element={<Home />} />
                     <Route path="/register" element={<Register />} />
                     <Route path="/login" element={<Login />} />
+                    <Route path='/book' element={<Book />} />
                 </Routes>
             </Router>
         </ThemeProvider>
