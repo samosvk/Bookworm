@@ -27,7 +27,11 @@ export default function Homepage() {
           </div>
           </div>
           <h1>Welcome to My Homepage</h1>
-          <p>This is a blank homepage with a login button.</p>
+            <div className='exampleQuiz'>
+              <Link to ='/book'>
+                <Button variant='contained' color='primary'>Example Quiz</Button>
+              </Link>
+            </div>
         </header>
       </div>
   );
