@@ -25,16 +25,10 @@ export default function LogIn() {
     event.preventDefault();
     const data = new URLSearchParams(new FormData(event.currentTarget));
     try {
-      //get the csrfToken
-      const csrfToken = document.cookie
-        .split('; ')
-        .find(row => row.startsWith('csrftoken='))
-        .split('=')[1];
       const response = await fetch('http://localhost:8000/authenticate/login/', {
       method: 'POST',
       headers: {
         'Content-Type': 'application/x-www-form-urlencoded',
-        'X-CSRFToken': csrfToken
       },
       body: data.toString(),
       credentials: 'include'
