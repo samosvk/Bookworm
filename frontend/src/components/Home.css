@@ -1,0 +1,24 @@
+body{
+    margin: 0;
+}
+.container {
+    background-color: #7FC7D9;
+    padding: 0px;
+    position: relative; /* Required for absolute positioning inside */
+}
+.title {
+    display: flex;
+    justify-content: center; /* horizontally center */
+    margin-right: 40px;
+}
+  
+.loginButton {
+    position: absolute;
+    top: 50px;
+    right: 40px;
+}
+.registerButton {
+    position: absolute;
+    top: 50px;
+    right: 130px;
+}
