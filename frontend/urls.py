@@ -5,5 +5,5 @@ urlpatterns = [
     path('', index),
     path('login/', index),
     path('register/', index),
-    path('book/', index)
+    path('book/<int:bookId>', index)
 ]

@@ -1,16 +1,18 @@
 import React, { useState, useEffect } from 'react';
 import { Container, Typography, Paper, Radio, RadioGroup, FormControlLabel, FormControl, Button } from '@mui/material';
+import { useParams } from 'react-router-dom';
 import axios from 'axios';
 
-function BookElements({ bookId = 1 }) {
+function BookElements() {
+  const {bookId} = useParams();
   const [elements, setElements] = useState([]);
 
-  useEffect(() => {
+  useEffect(() => { // Fetch book elements whenever bokId changes
     async function fetchElements() {
       try {
+        //request booke elements from the backend
         const response = await axios.get(`/api/element/${bookId}`);
         setElements(response.data);
-        console.log(response.data);
       } catch (error) {
         console.error('Error fetching elements:', error);
       }
@@ -23,25 +25,32 @@ function BookElements({ bookId = 1 }) {
     if (element.element_type === 'MultipleChoice') {
       return (
         <div key={element.id}>
-          <Typography variant="subtitle1">Question: {element.content_object.question}</Typography>
-          <FormControl component="fieldset">
-            <RadioGroup aria-label={`question-${element.id}`} name={`question-${element.id}`}>
-              {element.content_object.options.map((option, optionIndex) => (
-                <FormControlLabel
-                  key={optionIndex}
-                  value={option}
-                  control={<Radio />}
-                  label={option}
-                />
-              ))}
-            </RadioGroup>
-          </FormControl>
+          <div>
+            <Typography variant="subtitle1">Question: {element.content_object.question}</Typography>
+            <FormControl component="fieldset">
+              <RadioGroup aria-label={`question-${element.id}`} name={`question-${element.id}`}>
+                {element.content_object.options.map((option, optionIndex) =>
+                  <FormControlLabel
+                    key={optionIndex}
+                    value={option}
+                    control={<Radio />}
+                    label={option}
+                  />
+                )}
+              </RadioGroup>
+            </FormControl>
+          </div>
+          <div>
+            <Button variant="contained" color="primary" onSubmit={console.log('Submitted')}>
+              Submit
+            </Button>
+          </div>
         </div>
       );
     } else if (element.element_type === 'Text') {
       return (
         <div key={element.id}>
-          <Typography variant="subtitle1">Text: {element.content_object.text}</Typography>
+          <Typography variant="subtitle1" style={{whiteSpace:'pre-line'}}>{element.content_object.text}</Typography>
         </div>
       );
     } else {
@@ -54,13 +63,10 @@ function BookElements({ bookId = 1 }) {
       <Paper elevation={3} style={{ padding: '20px', margin: '20px 0' }}>
         <Typography variant="h4">Title</Typography>
         <div>
-          {elements.map(element => (
+          {elements.map(element => ( // Render each element
             renderElementContent(element)
           ))}
         </div>
-        <Button variant="contained" onClick={() => console.log('Submit')}>
-          Submit
-        </Button>
       </Paper>
     </Container>
   );

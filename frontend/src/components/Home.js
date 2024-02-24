@@ -28,7 +28,7 @@ export default function Homepage() {
           </div>
           <h1>Welcome to My Homepage</h1>
             <div className='exampleQuiz'>
-              <Link to ='/book'>
+              <Link to ='/book/1'>
                 <Button variant='contained' color='primary'>Example Quiz</Button>
               </Link>
             </div>
