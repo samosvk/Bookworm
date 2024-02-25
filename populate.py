@@ -15,7 +15,7 @@ book = Book.objects.create(title="Sample Book")
 multiple_choice = MultipleChoice.objects.create(
     book=book,
     question="What is the largest number?",
-    answer="Sample Answer",
+    answer='4',
     options=['1', '2', '3', '4']
 )
 

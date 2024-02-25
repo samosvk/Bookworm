@@ -10,9 +10,20 @@ from django.views.decorators.csrf import csrf_exempt
 
 # Create your views here.
 
-class BookView(generics.CreateAPIView):
-    queryset = Book.objects.all()
-    serializer_class = BookSerializer
+class BookView(APIView):
+    def get(self, request, book_id):
+        try:
+            book = Book.objects.get(pk=book_id)
+        except Book.DoesNotExist:
+            return Response({"error": "Book not found"},status=status.HTTP_404_NOT_FOUND)
+        elements = Element.objects.filter(book=book)
+        book_serializer = BookSerializer(book)
+        element_serializer = ElementSerializer(elements, many=True)
+        response_data = {
+            "book": book_serializer.data,
+            "elements": element_serializer.data
+        }
+        return Response(response_data, status=status.HTTP_200_OK)
 
 class CreateBookView(APIView):
     serializer_class = CreateBookSerializer
@@ -21,12 +32,18 @@ class CreateBookView(APIView):
         pass
 
 class ElementsView(APIView):
-    def get(self, request, book_id):
+    #check if the answer is correct
+    def post(self, request, book_id, element_id):
         try:
-            book = Book.objects.get(pk=book_id)
-        except Book.DoesNotExist:
-            return Response({"error": "Book not found"},status=status.HTTP_404_NOT_FOUND)
-        elements = Element.objects.filter(book=book)
-        serializer = ElementSerializer(elements, many=True)
-        print(serializer.data)
-        return Response(serializer.data, status=status.HTTP_200_OK)
+            element = Element.objects.get(pk=element_id, book_id=book_id)
+        except Element.DoesNotExist:
+            return Response({"error": "Element not found"},status=status.HTTP_404_NOT_FOUND)
+        
+        submitted_option = request.data.get('option',None)
+        if not submitted_option:
+            return Response({"error": "Option not found"},status=status.HTTP_400_BAD_REQUEST)
+        #check if answer is correct 
+        if element.content_object.answer == submitted_option:
+            return Response({"is_correct": True}, status=status.HTTP_200_OK)
+        return Response({"is_correct": False}, status=status.HTTP_200_OK)
+    
