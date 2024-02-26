@@ -4,7 +4,7 @@ from .models import Book, Text, MultipleChoice, Element
 class BookSerializer(serializers.ModelSerializer):
     class Meta:
         model = Book
-        fields = ('book_id', 'title','created_at')
+        fields = ('title','created_at')
 
 class CreateBookSerializer(serializers.ModelSerializer):
     class Meta:
@@ -14,12 +14,12 @@ class CreateBookSerializer(serializers.ModelSerializer):
 class MultipleChoiceSerializer(serializers.ModelSerializer):
     class Meta:
         model = MultipleChoice
-        fields = '__all__'
+        fields = ('book', 'question', 'options') 
 
 class TextSerializer(serializers.ModelSerializer):
     class Meta:
         model = Text
-        fields = '__all__'
+        fields = ('book', 'text')
 
 class ElementSerializer(serializers.ModelSerializer):
     content_object = serializers.SerializerMethodField()
@@ -39,4 +39,4 @@ class ElementSerializer(serializers.ModelSerializer):
         return serializers_map.get(type(instance), None)
     class Meta:
         model = Element
-        fields = '__all__'
+        fields = ('id','book', 'content_object', 'element_type')

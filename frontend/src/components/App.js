@@ -36,7 +36,7 @@ export default function App() {
                     <Route path="/" element={<Home />} />
                     <Route path="/register" element={<Register />} />
                     <Route path="/login" element={<Login />} />
-                    <Route path='/book' element={<Book />} />
+                    <Route path='/book/:bookId' element={<Book />} />
                 </Routes>
             </Router>
         </ThemeProvider>
