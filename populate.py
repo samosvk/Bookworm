@@ -15,12 +15,12 @@ book = Book.objects.create(title="Sample Book")
 multiple_choice = MultipleChoice.objects.create(
     book=book,
     question="What is the largest number?",
-    answer="Sample Answer",
+    answer='4',
     options=['1', '2', '3', '4']
 )
 
 # Create a text instance
-text = Text.objects.create(book=book, text="Sample Text")
+text = Text.objects.create(book=book, text="This is some sample text.\n I am just testing")
 
 # Create an element instance associated with the book and multiple choice instance
 element_multiple_choice = Element.objects.create(book=book, content_object=multiple_choice)
