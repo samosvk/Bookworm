@@ -8,8 +8,6 @@ from rest_framework.permissions import AllowAny
 from rest_framework import status
 from django.views.decorators.csrf import csrf_exempt
 
-# Create your views here.
-
 class BookView(APIView):
     def get(self, request, book_id):
         try:
@@ -34,7 +32,7 @@ class CreateBookView(APIView):
         pass
 
 class ElementsView(APIView):
-    #check if the answer is correct
+    #Check if the answer is correct
     def post(self, request, book_id, element_id):
         #check if the element exists
         try:
@@ -51,3 +49,21 @@ class ElementsView(APIView):
             return Response({"is_correct": True}, status=status.HTTP_200_OK)
         return Response({"is_correct": False}, status=status.HTTP_200_OK)
     
+class EditorView(APIView):
+    # handle delete of element
+    def delete(self, request, book_id, element_id):
+        try:
+            element = Element.objects.get(pk=element_id, book_id=book_id)
+        except Element.DoesNotExist:
+            return Response({"error": "Element not found"},status=status.HTTP_404_NOT_FOUND)
+        #delete the element and return response
+        element.delete() 
+        return Response(status=status.HTTP_200_OK)
+    
+    # handle creation of element
+    def post(self, request, book_id):
+        pass
+
+    # handle update of element
+    def put(self, request, book_id, element_id):
+        pass
