@@ -6,7 +6,7 @@ os.environ.setdefault('DJANGO_SETTINGS_MODULE', 'bookworm.settings')
 django.setup()
 
 # Import your models after setup
-from api.models import Book, Element, MultipleChoice, Text
+from api.models import Book, Element, MultipleChoice, Text, FillBlank
 
 # Create a book instance
 book = Book.objects.create(title="Sample Book")
@@ -27,6 +27,13 @@ element_multiple_choice = Element.objects.create(book=book, content_object=multi
 
 # Create another element instance associated with the book and text instance
 element_text = Element.objects.create(book=book, content_object=text)
+
+fill_blank = FillBlank.objects.create(
+    book=book,
+    question="What number comes after 2?",
+    answer='3'
+)
+element_fill_blank = Element.objects.create(book=book, content_object=fill_blank)
 
 # Output success message
 print("Data populated successfully!")
