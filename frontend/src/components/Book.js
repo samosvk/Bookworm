@@ -5,7 +5,7 @@ import axios from 'axios';
 import CheckIcon from '@mui/icons-material/Check';
 import CloseIcon from '@mui/icons-material/Close';
 
-function BookElements() {
+function Book() {
   const {bookId} = useParams(); //get the bookId from the URL
   const [elements, setElements] = useState([]); //store book elements in a list
   const [selectedOptions, setSelectedOptions] = useState({}); //make a dict to store selected options
@@ -16,7 +16,7 @@ function BookElements() {
     async function fetchElements() {
       try {
         //request book elements from the backend
-        const response = await axios.get(`/api/element/${bookId}`);
+        const response = await axios.get(`/api/book/${bookId}`);
         setElements(response.data.elements);
         setTitle(response.data.book.title);
       } catch (error) {
@@ -125,4 +125,4 @@ function BookElements() {
   );
 }
 
-export default BookElements;
+export default Book;
