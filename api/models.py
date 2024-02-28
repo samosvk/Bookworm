@@ -22,6 +22,8 @@ class Element(models.Model):
             self.element_type = 'MultipleChoice'
         elif isinstance(self.content_object, Text):
             self.element_type = 'Text'
+        elif isinstance(self.content_object, FillBlank):
+            self.element_type = 'FillBlank'
 
         super().save(*args, **kwargs)
         
@@ -35,12 +37,18 @@ class Element(models.Model):
 class MultipleChoice(models.Model):
     book = models.ForeignKey(Book, on_delete=models.CASCADE)
     element = GenericRelation(Element)
-    question = models.CharField(max_length=100)
+    question = models.TextField()
     answer = models.CharField(max_length=100, default=None)
     options = models.JSONField()
 
 class Text(models.Model):
     book = models.ForeignKey(Book, on_delete=models.CASCADE)
     element = GenericRelation(Element)
-    text = models.CharField(max_length=1000000)
+    text = models.TextField()
+
+class FillBlank(models.Model):
+    book = models.ForeignKey(Book, on_delete=models.CASCADE)
+    element = GenericRelation(Element)
+    question = models.TextField()
+    answer = models.CharField(max_length=100, default=None)
     
