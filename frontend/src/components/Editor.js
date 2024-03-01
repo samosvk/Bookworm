@@ -9,7 +9,7 @@ function Editor() {
   const {bookId} = useParams(); //get the bookId from the URL
   const [elements, setElements] = useState([]); //store book elements in a list
   const [title, setTitle] = useState(''); //store the book title
-  const [elemenetUpdateCount, setElementUpdateCount] = useState(0); //dummy var that tracks element update count
+  const [elementUpdateCount, setElementUpdateCount] = useState(0); //dummy var that tracks element update count
 
   useEffect(() => { // Fetch book elements whenever bokId changes
     async function fetchElements() {
@@ -24,13 +24,13 @@ function Editor() {
     }
 
     fetchElements();
-  }, [bookId, elemenetUpdateCount]); // rerender if elements or bookid updated. Use counter to avoid infinite loop.
+  }, [bookId, elementUpdateCount]); // rerender if elements or bookid updated. Use counter to avoid infinite loop.
 
   //Remove associated element
   const handleRemove = async (elementId) => { 
     try {
       const response = await axios.delete(`/api/editor/${bookId}/${elementId}`);
-      setElementUpdateCount(elemenetUpdateCount + 1);
+      setElementUpdateCount(elementUpdateCount + 1);
     } catch(error) {
       console.error('Error submitting element:', error);
     }
