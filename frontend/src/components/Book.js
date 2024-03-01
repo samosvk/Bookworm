@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { Container, Typography, Paper, Radio, RadioGroup, FormControlLabel, FormControl, Button } from '@mui/material';
+import { Container, Typography, Paper, Radio, RadioGroup, FormControlLabel, FormControl, Button, TextField } from '@mui/material';
 import { useParams } from 'react-router-dom';
 import axios from 'axios';
 import CheckIcon from '@mui/icons-material/Check';
@@ -87,6 +87,25 @@ function BookElements() {
           <Typography variant="subtitle1" style={{whiteSpace:'pre-line'}}>{element.content_object.text}</Typography>
         </div>
       );
+    } else if (element.element_type === 'FillBlank') {
+      return (
+        <div key={element.id}>
+          <Typography variant="subtitle1">Question: {element.content_object.question}</Typography>
+          <TextField 
+            label="Answer" 
+            variant="outlined" 
+            onChange={(e) => handleOptionChange(element.id, e.target.value)} //update the selected option
+          />
+          {isCorrect==true &&  <CheckIcon sx={{color:"green"}} />}
+          {isCorrect==false && <CloseIcon sx= {{color:"red"}} />}
+          <div>
+          <Button variant="contained" color="primary" onClick={() => handleSubmit(element.id)}> 
+            Submit
+          </Button>
+          </div>
+        </div>
+      );
+   
     } else {
       return null; // Handle other types if needed
     }
