@@ -25,13 +25,6 @@ class BookView(APIView):
         }
         return Response(response_data, status=status.HTTP_200_OK)
 
-class CreateBookView(APIView):
-    serializer_class = CreateBookSerializer
-
-    def post(self, request, format=None):
-        pass
-
-class ElementsView(APIView):
     #Check if the answer is correct
     def post(self, request, book_id, element_id):
         #check if the element exists
@@ -48,6 +41,13 @@ class ElementsView(APIView):
         if element.content_object.answer == submitted_option:
             return Response({"is_correct": True}, status=status.HTTP_200_OK)
         return Response({"is_correct": False}, status=status.HTTP_200_OK)
+
+class CreateBookView(APIView):
+    serializer_class = CreateBookSerializer
+
+    def post(self, request, format=None):
+        pass
+
     
 class EditorView(APIView):
     # handle delete of element
