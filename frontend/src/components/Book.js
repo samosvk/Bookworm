@@ -39,7 +39,7 @@ function Book() {
     const selectOption = selectedOptions[elementId];
     if (selectOption != null){
       try {
-        const response = await axios.post(`/api/element/${bookId}/${elementId}`, {option: selectOption});
+        const response = await axios.post(`/api/book/${bookId}/${elementId}`, {option: selectOption});
         const { is_correct } = response.data;
         setCorrectAnswers(prevState => ({
           ...prevState,
