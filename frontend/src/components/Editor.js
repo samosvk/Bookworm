@@ -5,12 +5,11 @@ import axios from 'axios';
 import CheckIcon from '@mui/icons-material/Check';
 import CloseIcon from '@mui/icons-material/Close';
 
-function Book() {
+function Editor() {
   const {bookId} = useParams(); //get the bookId from the URL
   const [elements, setElements] = useState([]); //store book elements in a list
-  const [selectedOptions, setSelectedOptions] = useState({}); //make a dict to store selected options
-  const [correctAnswers, setCorrectAnswers] = useState({}); //make a dict to track correctness of answers
   const [title, setTitle] = useState(''); //store the book title
+  const [elemenetUpdateCount, setElementUpdateCount] = useState(0); //dummy var that tracks element update count
 
   useEffect(() => { // Fetch book elements whenever bokId changes
     async function fetchElements() {
@@ -25,34 +24,28 @@ function Book() {
     }
 
     fetchElements();
-  }, [bookId]);
+  }, [bookId, elemenetUpdateCount]); // rerender if elements or bookid updated. Use counter to avoid infinite loop.
 
-  const handleOptionChange = (elementId, option) => {
-    setSelectedOptions(prevState => ({
-      //create copy of previous state and update it
-      ...prevState, 
-      [elementId]: option
-    }));
-  };
-
-  const handleSubmit = async (elementId) => { 
-    const selectOption = selectedOptions[elementId];
-    if (selectOption != null){
-      try {
-        const response = await axios.post(`/api/element/${bookId}/${elementId}`, {option: selectOption});
-        const { is_correct } = response.data;
-        setCorrectAnswers(prevState => ({
-          ...prevState,
-          [elementId]: is_correct
-        }));
-      } catch(error) {
-        console.error('Error submitting element:', error);
-      }
+  //Remove associated element
+  const handleRemove = async (elementId) => { 
+    try {
+      const response = await axios.delete(`/api/editor/${bookId}/${elementId}`);
+      setElementUpdateCount(elemenetUpdateCount + 1);
+    } catch(error) {
+      console.error('Error submitting element:', error);
     }
   };
 
+  const handleAdd = async () => {
+    try {
+      // Sending None in place of elementId to create a new element
+      const response = await axios.post(`/api/editor/${bookId}`);
+    } catch(error) {
+      console.error('Error submitting element:', error);
+    }
+  }
+
   const renderElementContent = (element) => {
-    const isCorrect = correctAnswers[element.id];
     if (element.element_type === 'MultipleChoice') {
       return (
         <div key={element.id}>
@@ -66,17 +59,14 @@ function Book() {
                     value={option}
                     control={<Radio />}
                     label={option}
-                    onChange={() => handleOptionChange(element.id, option)} //update the selected option  
                   />
                 )}
               </RadioGroup>
             </FormControl>
-            {isCorrect==true &&  <CheckIcon sx={{color:"green"}} />}
-            {isCorrect==false && <CloseIcon sx= {{color:"red"}} />}
           </div>
           <div>
-            <Button variant="contained" color="primary" onClick={() => handleSubmit(element.id)}> 
-              Submit
+            <Button variant="outlined" color="primary" onClick={() => handleRemove(element.id)}> 
+              Remove
             </Button>
           </div>
         </div>
@@ -85,6 +75,11 @@ function Book() {
       return (
         <div key={element.id}>
           <Typography variant="subtitle1" style={{whiteSpace:'pre-line'}}>{element.content_object.text}</Typography>
+          <div>
+            <Button variant="outlined" color="primary" onClick={() => handleRemove(element.id)}> 
+              Remove
+            </Button>
+          </div>
         </div>
       );
     } else if (element.element_type === 'FillBlank') {
@@ -94,14 +89,11 @@ function Book() {
           <TextField 
             label="Answer" 
             variant="outlined" 
-            onChange={(e) => handleOptionChange(element.id, e.target.value)} //update the selected option
           />
-          {isCorrect==true &&  <CheckIcon sx={{color:"green"}} />}
-          {isCorrect==false && <CloseIcon sx= {{color:"red"}} />}
           <div>
-          <Button variant="contained" color="primary" onClick={() => handleSubmit(element.id)}> 
-            Submit
-          </Button>
+            <Button variant="outlined" color="primary" onClick={() => handleRemove(element.id)}> 
+              Remove
+            </Button>
           </div>
         </div>
       );
@@ -120,9 +112,14 @@ function Book() {
             renderElementContent(element)
           ))}
         </div>
+        <div>
+            <Button variant="contained" color="primary" onClick={() => handleAdd(element.id)}> 
+              Add
+            </Button>
+        </div>
       </Paper>
     </Container>
   );
 }
 
-export default Book;
+export default Editor;

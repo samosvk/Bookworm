@@ -8,6 +8,7 @@ import Login from './Login';
 import Register from './Register';
 import Home from './Home';
 import Book from './Book';
+import Editor from './Editor';
 import './App.css';
 const theme = createTheme({
     palette: {
@@ -37,6 +38,7 @@ export default function App() {
                     <Route path="/register" element={<Register />} />
                     <Route path="/login" element={<Login />} />
                     <Route path='/book/:bookId' element={<Book />} />
+                    <Route path='/editor/:bookId' element={<Editor />} />
                 </Routes>
             </Router>
         </ThemeProvider>
