@@ -1,7 +1,7 @@
 from django.shortcuts import render
 from rest_framework import generics
 from .serializers import BookSerializer, CreateBookSerializer, ElementSerializer
-from .models import Book, Element
+from .models import Book, Element, Text, MultipleChoice, FillBlank
 from rest_framework.views import APIView
 from rest_framework.response import Response
 from rest_framework.permissions import AllowAny
@@ -62,7 +62,26 @@ class EditorView(APIView):
     
     # handle creation of element
     def post(self, request, book_id):
-        pass
+        book = Book.objects.get(pk=book_id)
+        fields = request.data.get('element')
+        print(request.data)
+        if request.data.get('type') == 'Text':
+            new_element = Text.objects.create(book=book, 
+                                              text=fields.get('text'))
+        elif request.data.get('type') == 'FillBlank':
+            new_element = FillBlank.objects.create(book=book, 
+                                                   question=fields.get('question'),
+                                                   answer=fields.get('answer'))
+        elif request.data.get('type') == 'MultipleChoice':
+            new_element = MultipleChoice.objects.create(book=book,
+                                                        question=fields.get('question'),
+                                                        answer=fields.get('answer'), 
+                                                        options = fields.get('options'))
+        else:
+            return Response({"error": "Element type not found"},status=status.HTTP_400_BAD_REQUEST)
+        print('hello')
+        creation = Element.objects.create(book=book, content_object=new_element)
+        return Response(status=status.HTTP_201_CREATED)
 
     # handle update of element
     def put(self, request, book_id, element_id):
