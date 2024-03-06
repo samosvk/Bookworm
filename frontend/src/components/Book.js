@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { Container, Typography, Paper, Radio, RadioGroup, FormControlLabel, FormControl, Button, TextField } from '@mui/material';
-import { useParams } from 'react-router-dom';
+import { useParams, Link } from 'react-router-dom';
 import axios from 'axios';
 import CheckIcon from '@mui/icons-material/Check';
 import CloseIcon from '@mui/icons-material/Close';
@@ -115,6 +115,11 @@ function Book() {
     <Container maxWidth="xl">
       <Paper elevation={3} style={{ padding: '20px', margin: '20px 0' }}>
         <Typography variant="h4">{title}</Typography>
+        <Link to={`/editor/${bookId}`}>
+          <div style={{display: 'flex', justifyContent: 'flex-end'}}>
+            <Button>View Editor</Button>
+          </div>
+        </Link>
         <div>
           {elements.map(element => ( // Render each element
             renderElementContent(element)
