@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { Container, Typography, Paper, Radio, RadioGroup, FormControlLabel, FormControl, Button, TextField, MenuItem, InputLabel, Select } from '@mui/material';
-import { useParams } from 'react-router-dom';
+import { useParams, Link } from 'react-router-dom';
 import axios from 'axios';
 
 function Editor() {
@@ -179,6 +179,11 @@ function Editor() {
     <Container maxWidth="xl">
       <Paper elevation={3} style={{ padding: '20px', margin: '20px 0' }}>
         <Typography variant="h4">{title}</Typography>
+        <Link to={`/book/${bookId}`}>
+          <div style={{display: 'flex', justifyContent: 'flex-end'}}>
+            <Button>View Book</Button>
+          </div>
+        </Link>
         <div>
           {elements.map(element => ( // Render each element
             renderElementContent(element)
