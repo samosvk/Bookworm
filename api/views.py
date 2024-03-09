@@ -79,10 +79,20 @@ class EditorView(APIView):
                                                         options = fields.get('options'))
         else:
             return Response({"error": "Element type not found"},status=status.HTTP_400_BAD_REQUEST)
-        print('hello')
         creation = Element.objects.create(book=book, content_object=new_element)
         return Response(status=status.HTTP_201_CREATED)
 
     # handle update of element
     def put(self, request, book_id, element_id):
-        pass
+        try:
+            element = Element.objects.get(pk=element_id, book_id=book_id)
+        except Element.DoesNotExist:
+            return Response({"error": "Element not found"},status=status.HTTP_404_NOT_FOUND)
+        for attribute, value in request.data.items():
+            if hasattr(element.content_object, attribute):
+                if attribute == 'options':
+                    setattr(element.content_object, attribute, value.split(','))
+                else:
+                    setattr(element.content_object, attribute, value)
+        element.content_object.save()
+        return Response(status=status.HTTP_200_OK)
