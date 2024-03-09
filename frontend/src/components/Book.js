@@ -51,11 +51,11 @@ function Book() {
     }
   };
 
-  const renderElementContent = (element) => {
+  const renderElementContent = (element, index) => {
     const isCorrect = correctAnswers[element.id];
     if (element.element_type === 'MultipleChoice') {
       return (
-        <div key={element.id}>
+        <div key={element.id} style={{ marginBottom: '20px' }}>
           <div>
             <Typography variant="subtitle1">Question: {element.content_object.question}</Typography>
             <FormControl component="fieldset">
@@ -83,13 +83,13 @@ function Book() {
       );
     } else if (element.element_type === 'Text') {
       return (
-        <div key={element.id}>
-          <Typography variant="subtitle1" style={{whiteSpace:'pre-line'}}>{element.content_object.text}</Typography>
+        <div key={element.id} style={{ marginBottom: '20px' }}>
+          <Typography variant="subtitle1" style={{ whiteSpace: 'pre-line' }}>{element.content_object.text}</Typography>
         </div>
       );
     } else if (element.element_type === 'FillBlank') {
       return (
-        <div key={element.id}>
+        <div key={element.id} style={{ marginBottom: '20px' }}>
           <Typography variant="subtitle1">Question: {element.content_object.question}</Typography>
           <TextField 
             label="Answer" 
@@ -99,13 +99,12 @@ function Book() {
           {isCorrect==true &&  <CheckIcon sx={{color:"green"}} />}
           {isCorrect==false && <CloseIcon sx= {{color:"red"}} />}
           <div>
-          <Button variant="contained" color="primary" onClick={() => handleSubmit(element.id)}> 
-            Submit
-          </Button>
+            <Button variant="contained" color="primary" onClick={() => handleSubmit(element.id)}> 
+              Submit
+            </Button>
           </div>
         </div>
       );
-   
     } else {
       return null; // Handle other types if needed
     }
@@ -114,7 +113,9 @@ function Book() {
   return (
     <Container maxWidth="xl">
       <Paper elevation={3} style={{ padding: '20px', margin: '20px 0' }}>
-        <Typography variant="h4">{title}</Typography>
+        <Typography variant="h4" style={{display:'flex', justifyContent:'center'}}>
+          {title}
+        </Typography>
         <Link to={`/editor/${bookId}`}>
           <div style={{display: 'flex', justifyContent: 'flex-end'}}>
             <Button>View Editor</Button>

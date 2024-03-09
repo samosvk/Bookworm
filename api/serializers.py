@@ -14,7 +14,7 @@ class CreateBookSerializer(serializers.ModelSerializer):
 class MultipleChoiceSerializer(serializers.ModelSerializer):
     class Meta:
         model = MultipleChoice
-        fields = ('book', 'question', 'options') 
+        fields = ('book', 'question', 'options', 'answer') 
 
 class TextSerializer(serializers.ModelSerializer):
     class Meta:
@@ -24,7 +24,7 @@ class TextSerializer(serializers.ModelSerializer):
 class FillBlankSerializer(serializers.ModelSerializer):
     class Meta:
         model = FillBlank
-        fields = ('book', 'question')
+        fields = ('book', 'question', 'answer')
 
 class ElementSerializer(serializers.ModelSerializer):
     #call get_conent_object to get the content of the element

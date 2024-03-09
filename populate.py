@@ -9,7 +9,7 @@ django.setup()
 from api.models import Book, Element, MultipleChoice, Text, FillBlank
 
 # Create a book instance
-book = Book.objects.create(title="Sample Book")
+book = Book.objects.create(title="Notre Dame Lesson")
 
 # Create a multiple choice instance
 multiple_choice = MultipleChoice.objects.create(

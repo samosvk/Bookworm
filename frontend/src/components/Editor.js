@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { Container, Typography, Paper, Radio, RadioGroup, FormControlLabel, FormControl, Button, TextField, MenuItem, InputLabel, Select } from '@mui/material';
+import { Container, Typography, Paper, Button, TextField, MenuItem, InputLabel, Select, Snackbar } from '@mui/material';
 import { useParams, Link } from 'react-router-dom';
 import axios from 'axios';
 
@@ -11,6 +11,9 @@ function Editor() {
   const [showForm, setShowForm] = useState(false); //show form to add new element
   const [addElementType, setAddElementType] = useState('Text'); //type of element to add
   const [newElement, setNewElement] = useState({}); //store new element data to send in post request
+  const [editedElement, setEditedElement] = useState({}); //store edited element data to send in put request
+  const [snackbarOpen, setSnackbarOpen] = useState(false);
+  const [snackbarMessage, setSnackbarMessage] = useState('');
 
   useEffect(() => { // Fetch book elements whenever bokId changes
     async function fetchElements() {
@@ -42,7 +45,7 @@ function Editor() {
         return (
           <div>
             <TextField label="Question" onChange={(e) => setNewElement({ ...newElement, question: e.target.value })} />
-            <TextField label="Options (comma seperated)" onChange={(e) => setNewElement({ ...newElement, options: e.target.value.split(',') })} />
+            <TextField label="Options (comma separated)" onChange={(e) => setNewElement({ ...newElement, options: e.target.value.split(',') })} />
             <TextField label="Answer" onChange={(e) => setNewElement({ ...newElement, answer: e.target.value })} />
           </div>
         );
@@ -69,20 +72,18 @@ function Editor() {
           <Button variant='outlined' color='primary' onClick={() => setShowForm(false)}>
             Cancel
           </Button>
-          <FormControl>
-            <InputLabel id="dropdown-label">Select an option</InputLabel>
-            <Select
-              labelId="dropdown-label"
-              id="dropdown"
-              value={addElementType}
-              onChange={(event) => setAddElementType(event.target.value)}
-            >
-              <MenuItem value="Text">Text</MenuItem>
-              <MenuItem value="MultipleChoice">Multiple Choice</MenuItem>
-              <MenuItem value="FillBlank">Fill in the Blank</MenuItem>
-            </Select>
-            {renderTextBoxes()}
-          </FormControl>
+          <InputLabel id="dropdown-label">Select an option</InputLabel>
+          <Select
+            labelId="dropdown-label"
+            id="dropdown"
+            value={addElementType}
+            onChange={(event) => setAddElementType(event.target.value)}
+          >
+            <MenuItem value="Text">Text</MenuItem>
+            <MenuItem value="MultipleChoice">Multiple Choice</MenuItem>
+            <MenuItem value="FillBlank">Fill in the Blank</MenuItem>
+          </Select>
+          {renderTextBoxes()}
         </div>
       );
     } else {
@@ -95,10 +96,15 @@ function Editor() {
       );
     }
   }
+
   //Remove associated element
   const handleRemove = async (elementId) => {
     try {
       const response = await axios.delete(`/api/editor/${bookId}/${elementId}`);
+      if (response.status === 200) {
+        setSnackbarMessage('Element deleted');
+        setSnackbarOpen(true);
+      }
       setElementUpdateCount(elementUpdateCount + 1);
     } catch (error) {
       console.error('Error submitting element:', error);
@@ -110,6 +116,10 @@ function Editor() {
     try {
       const response = await axios.post(`/api/editor/${bookId}/`, {type: addElementType, element: newElement});
       setShowForm(false); // hide the form after adding
+      if (response.status === 201) {
+        setSnackbarMessage('Element added');
+        setSnackbarOpen(true);
+      }
       setElementUpdateCount(elementUpdateCount + 1);
       setNewElement({}); // clear new element
     } catch (error) {
@@ -117,68 +127,142 @@ function Editor() {
     }
   }
 
+  //Edit the element
+  const handleEdit = async (elementId) => {
+    try {
+      //get the edited data of the element that called the function
+      const editedElementData = {...editedElement[elementId]};
+      setEditedElement(prevState => ({
+        ...prevState,
+        [elementId]: {}
+      }));
+      const response = await axios.put(`/api/editor/${bookId}/${elementId}`, editedElementData);
+      //if the response is successful, show a snackbar message
+      if (response.status === 200) {
+        setSnackbarMessage('Element updated');
+        setSnackbarOpen(true);
+      }
+      setElementUpdateCount(elementUpdateCount + 1);
+    } catch (error) {
+      console.error('Error submitting element:', error);
+      setSnackbarMessage('Error updating element');
+      setSnackbarOpen(true);
+    }
+  }
+
+  //close the snackbar
+  const handleSnackbarClose = (event, reason) => {
+    setSnackbarOpen(false);
+  };
+
   const renderElementContent = (element) => {
+    const handleEditChange = (fieldName, value) => {
+      setEditedElement(prevState => ({
+        ...prevState,
+        [element.id]: {
+          ...prevState[element.id],
+          [fieldName]: value
+        }
+      }));
+    };
+  
     if (element.element_type === 'MultipleChoice') {
       return (
-        <div key={element.id}>
+        <div key={element.id} style={{marginBottom: '20px'}}>
           <div>
-            <Typography variant="subtitle1">Question: {element.content_object.question}</Typography>
-            <FormControl component="fieldset">
-              <RadioGroup aria-label={`question-${element.id}`} name={`question-${element.id}`}>
-                {element.content_object.options.map((option, optionIndex) =>
-                  <FormControlLabel
-                    key={optionIndex}
-                    value={option}
-                    control={<Radio />}
-                    label={option}
-                  />
-                )}
-              </RadioGroup>
-            </FormControl>
+            <TextField
+              label="Question"
+              variant="outlined"
+              defaultValue={element.content_object.question}
+              fullWidth
+              multiline
+              onChange={(e) => handleEditChange('question', e.target.value)}
+            />
+          </div>
+          <div>
+            <TextField
+              label="Options"
+              variant="outlined"
+              defaultValue={element.content_object.options.join(',')}
+              onChange={(e) => handleEditChange('options', e.target.value)}
+            />
+            <TextField
+              label="Answer"
+              variant="outlined"
+              defaultValue={element.content_object.answer}
+              onChange={(e) => handleEditChange('answer', e.target.value)}
+            />
           </div>
           <div>
             <Button variant="outlined" color="primary" onClick={() => handleRemove(element.id)}>
               Remove
+            </Button>
+            <Button variant="contained" color='primary' onClick={() => handleEdit(element.id)}>
+              Edit
             </Button>
           </div>
         </div>
       );
     } else if (element.element_type === 'Text') {
       return (
-        <div key={element.id}>
-          <Typography variant="subtitle1" style={{ whiteSpace: 'pre-line' }}>{element.content_object.text}</Typography>
+        <div key={element.id} style={{marginBottom: '20px'}}>
+          <TextField
+            label="Text"
+            variant="outlined"
+            fullWidth
+            multiline
+            rows={4}
+            defaultValue={element.content_object.text}
+            onChange={(e) => handleEditChange('text', e.target.value)}
+          />
           <div>
             <Button variant="outlined" color="primary" onClick={() => handleRemove(element.id)}>
               Remove
+            </Button>
+            <Button variant="contained" color='primary' onClick={() => handleEdit(element.id)}>
+              Edit
             </Button>
           </div>
         </div>
       );
     } else if (element.element_type === 'FillBlank') {
       return (
-        <div key={element.id}>
-          <Typography variant="subtitle1">Question: {element.content_object.question}</Typography>
+        <div key={element.id} style={{marginBottom: '20px'}}>
+          <TextField
+            label="Question"
+            variant="outlined"
+            defaultValue={element.content_object.question}
+            fullWidth
+            multiline
+            onChange={(e) => handleEditChange('question', e.target.value)}
+          />
           <TextField
             label="Answer"
             variant="outlined"
+            defaultValue={element.content_object.answer}
+            onChange={(e) => handleEditChange('answer', e.target.value)}
           />
           <div>
             <Button variant="outlined" color="primary" onClick={() => handleRemove(element.id)}>
               Remove
             </Button>
+            <Button variant="contained" color='primary' onClick={() => handleEdit(element.id)}>
+              Edit
+            </Button>
           </div>
         </div>
       );
-
     } else {
       return null; // Handle other types if needed
     }
   };
-
+  
   return (
     <Container maxWidth="xl">
       <Paper elevation={3} style={{ padding: '20px', margin: '20px 0' }}>
-        <Typography variant="h4">{title}</Typography>
+        <Typography variant="h4" style={{display:'flex', justifyContent:'center'}}>
+          {title}
+        </Typography>
         <Link to={`/book/${bookId}`}>
           <div style={{display: 'flex', justifyContent: 'flex-end'}}>
             <Button>View Book</Button>
@@ -193,6 +277,16 @@ function Editor() {
           {displayAddForm()}
         </div>
       </Paper>
+      <Snackbar
+        anchorOrigin={{
+          vertical: 'top',
+          horizontal: 'center',
+        }}
+        open={snackbarOpen}
+        autoHideDuration={800}
+        onClose={handleSnackbarClose}
+        message={snackbarMessage}
+      />
     </Container>
   );
 }
