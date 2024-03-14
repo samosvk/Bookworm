@@ -15,9 +15,17 @@ class Element(models.Model):
     object_id = models.PositiveIntegerField()
     content_object = GenericForeignKey('content_type', 'object_id')
     element_type = models.CharField(max_length=100, default=None)
+    priority = models.PositiveIntegerField()  # Priority attribute added
 
     def save(self, *args, **kwargs):
-        # Automatically set the element_type based on the type of content_object being saved
+        if not self.pk:  # Only execute on creation, not update
+            # Calculate priority when creating a new element
+            max_priority = Element.objects.filter(book=self.book).aggregate(models.Max('priority'))['priority__max']
+            if max_priority is None:
+                self.priority = 1
+            else:
+                self.priority = max_priority + 1
+
         if isinstance(self.content_object, MultipleChoice):
             self.element_type = 'MultipleChoice'
         elif isinstance(self.content_object, Text):
@@ -26,13 +34,15 @@ class Element(models.Model):
             self.element_type = 'FillBlank'
 
         super().save(*args, **kwargs)
-        
+
     def delete(self, *args, **kwargs):
-        # Delete the content_object before deleting the element
-        #This will delete the MultipleChoice or Text instance associated with the element
-        self.content_object.delete()
+        # When an element is deleted, adjust priorities of elements with higher priority
+        higher_priority_elements = Element.objects.filter(book=self.book, priority__gt=self.priority)
+        for higher_priority_element in higher_priority_elements:
+            higher_priority_element.priority -= 1
+            higher_priority_element.save()
+
         super().delete(*args, **kwargs)
-    
 
 class MultipleChoice(models.Model):
     book = models.ForeignKey(Book, on_delete=models.CASCADE)
