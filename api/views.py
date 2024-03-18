@@ -1,6 +1,6 @@
 from django.shortcuts import render
 from rest_framework import generics
-from .serializers import BookSerializer, CreateBookSerializer, ElementSerializer
+from .serializers import * 
 from .models import Book, Element, Text, MultipleChoice, FillBlank
 from rest_framework.views import APIView
 from rest_framework.response import Response
@@ -14,8 +14,8 @@ class BookView(APIView):
             book = Book.objects.get(pk=book_id)
         except Book.DoesNotExist:
             return Response({"error": "Book not found"},status=status.HTTP_404_NOT_FOUND)
-        #get book and element data for the specified book
-        elements = Element.objects.filter(book=book)
+        #get book and element data for the specified book and order the elements by priority for rendering
+        elements = Element.objects.filter(book=book).order_by('priority')
         book_serializer = BookSerializer(book)
         element_serializer = ElementSerializer(elements, many=True)
         #add book data and associated element data to the response
@@ -41,6 +41,26 @@ class BookView(APIView):
         if element.content_object.answer == submitted_option:
             return Response({"is_correct": True}, status=status.HTTP_200_OK)
         return Response({"is_correct": False}, status=status.HTTP_200_OK)
+    
+    #Change the order of the elements
+    def put(self, request, book_id, element_id):
+        #get the elements and their new order
+        element_1 = Element.objects.get(pk=element_id, book_id=book_id)
+        current_priority = element_1.priority
+        direction = request.data.get('direction')
+        if direction not in [1, -1]:
+            return Response({"error": "Invalid direction"}, status=status.HTTP_400_BAD_REQUEST)
+        new_priority = current_priority + direction
+        try:
+            # get the element with the new priority
+            element_2 = Element.objects.get(priority=new_priority, book_id=book_id)
+            # swap the priorities of the two elements
+            element_1.priority, element_2.priority = element_2.priority, element_1.priority
+            element_1.save()
+            element_2.save()
+        except Element.DoesNotExist:
+            return Response({"error": "Invalid priority"}, status=status.HTTP_400_BAD_REQUEST)
+        return Response(status=status.HTTP_200_OK)
 
 class CreateBookView(APIView):
     serializer_class = CreateBookSerializer
@@ -63,25 +83,31 @@ class EditorView(APIView):
     # handle creation of element
     def post(self, request, book_id):
         book = Book.objects.get(pk=book_id)
+        element_type = request.data.get('type')
+        #get the provided fields for the element
         fields = request.data.get('element')
-        print(request.data)
-        if request.data.get('type') == 'Text':
-            new_element = Text.objects.create(book=book, 
-                                              text=fields.get('text'))
-        elif request.data.get('type') == 'FillBlank':
-            new_element = FillBlank.objects.create(book=book, 
-                                                   question=fields.get('question'),
-                                                   answer=fields.get('answer'))
-        elif request.data.get('type') == 'MultipleChoice':
-            new_element = MultipleChoice.objects.create(book=book,
-                                                        question=fields.get('question'),
-                                                        answer=fields.get('answer'), 
-                                                        options = fields.get('options'))
-        else:
-            return Response({"error": "Element type not found"},status=status.HTTP_400_BAD_REQUEST)
-        creation = Element.objects.create(book=book, content_object=new_element)
-        return Response(status=status.HTTP_201_CREATED)
 
+        #get serializer for the associated type of the elements
+        serializer_class = self.get_serializer_class(element_type)
+        if serializer_class is None:
+            return Response({"error": "Element type not found"}, status=status.HTTP_400_BAD_REQUEST)
+        #create the element and return response
+        serializer = serializer_class(data={'book': book.id, **fields})
+        if serializer.is_valid():
+            new_element = serializer.save()
+            creation = Element.objects.create(book=book, content_object=new_element)
+            return Response(ElementSerializer(creation).data, status=status.HTTP_201_CREATED)
+        else:
+            return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+
+    #assign serializer for the associated type of the elements
+    def get_serializer_class(self, element_type):
+        serializers_map = {
+            'Text': TextSerializer,
+            'FillBlank': FillBlankSerializer,
+            'MultipleChoice': MultipleChoiceSerializer,
+        }
+        return serializers_map.get(element_type)
     # handle update of element
     def put(self, request, book_id, element_id):
         try:
@@ -91,7 +117,8 @@ class EditorView(APIView):
         for attribute, value in request.data.items():
             if hasattr(element.content_object, attribute):
                 if attribute == 'options':
-                    setattr(element.content_object, attribute, value.split(','))
+                    #split the options by comma and remove any leading or trailing spaces
+                    setattr(element.content_object, attribute, [option.strip() for option in value.split(",")])
                 else:
                     setattr(element.content_object, attribute, value)
         element.content_object.save()

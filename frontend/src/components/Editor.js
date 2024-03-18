@@ -1,5 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { Container, Typography, Paper, Button, TextField, MenuItem, InputLabel, Select, Snackbar } from '@mui/material';
+import ArrowUpwardIcon from '@mui/icons-material/ArrowUpward';
+import ArrowDownwardIcon from '@mui/icons-material/ArrowDownward';
 import { useParams, Link } from 'react-router-dom';
 import axios from 'axios';
 
@@ -31,7 +33,7 @@ function Editor() {
   }, [bookId, elementUpdateCount]); // rerender if elements or bookid updated. Use counter to avoid infinite loop.
 
   //Render textboxes based on element type
-  const renderTextBoxes = () => {
+  const renderAddBoxes = () => {
     switch (addElementType) {
       case "Text":
         return (
@@ -45,7 +47,7 @@ function Editor() {
         return (
           <div>
             <TextField label="Question" onChange={(e) => setNewElement({ ...newElement, question: e.target.value })} />
-            <TextField label="Options (comma separated)" onChange={(e) => setNewElement({ ...newElement, options: e.target.value.split(',') })} />
+            <TextField label="Options (comma separated)" onChange={(e) => setNewElement({ ...newElement, options: e.target.value.split(',').map(item => item.trim()) })} />
             <TextField label="Answer" onChange={(e) => setNewElement({ ...newElement, answer: e.target.value })} />
           </div>
         );
@@ -83,7 +85,7 @@ function Editor() {
             <MenuItem value="MultipleChoice">Multiple Choice</MenuItem>
             <MenuItem value="FillBlank">Fill in the Blank</MenuItem>
           </Select>
-          {renderTextBoxes()}
+          {renderAddBoxes()}
         </div>
       );
     } else {
@@ -155,7 +157,8 @@ function Editor() {
     setSnackbarOpen(false);
   };
 
-  const renderElementContent = (element) => {
+  const renderElementContent = (element, index) => {
+    //handle the change of the edited element
     const handleEditChange = (fieldName, value) => {
       setEditedElement(prevState => ({
         ...prevState,
@@ -165,6 +168,44 @@ function Editor() {
         }
       }));
     };
+
+    const handleMove = async (element, direction) => {
+      try{
+        const response = await axios.put(`/api/book/${bookId}/${element.id}`, {direction: direction});
+        if (response.status === 200) {
+          setSnackbarMessage('Element moved');
+          setSnackbarOpen(true);
+        }
+        setElementUpdateCount(elementUpdateCount + 1);
+      } catch (error) {
+        console.error('Error moving element:', error);
+        setSnackbarMessage('Error moving element');
+        setSnackbarOpen(true);
+      }
+
+    };
+
+    //common buttons for all elements
+    const commonButtons = (index) => {
+      return(
+          <div>
+            <Button variant="outlined" color='primary' onClick={() => handleRemove(element.id)}>
+              Remove
+            </Button>
+            <Button variant="contained" color='primary' onClick={() => handleEdit(element.id)}>
+              Update
+            </Button>
+            {index > 0 && 
+            <Button variant="text" color='primary' onClick={() => handleMove(element, -1)}>
+              <ArrowUpwardIcon fontSize='large'/>
+            </Button>}
+            {index < elements.length - 1 && 
+            <Button variant="text" color='primary'  onClick={() => handleMove(element, 1)}>
+              <ArrowDownwardIcon fontSize='large'/>
+            </Button>}
+          </div>  
+      )
+    }
   
     if (element.element_type === 'MultipleChoice') {
       return (
@@ -193,14 +234,7 @@ function Editor() {
               onChange={(e) => handleEditChange('answer', e.target.value)}
             />
           </div>
-          <div>
-            <Button variant="outlined" color="primary" onClick={() => handleRemove(element.id)}>
-              Remove
-            </Button>
-            <Button variant="contained" color='primary' onClick={() => handleEdit(element.id)}>
-              Edit
-            </Button>
-          </div>
+          {commonButtons(index)}
         </div>
       );
     } else if (element.element_type === 'Text') {
@@ -215,14 +249,7 @@ function Editor() {
             defaultValue={element.content_object.text}
             onChange={(e) => handleEditChange('text', e.target.value)}
           />
-          <div>
-            <Button variant="outlined" color="primary" onClick={() => handleRemove(element.id)}>
-              Remove
-            </Button>
-            <Button variant="contained" color='primary' onClick={() => handleEdit(element.id)}>
-              Edit
-            </Button>
-          </div>
+          {commonButtons(index)}
         </div>
       );
     } else if (element.element_type === 'FillBlank') {
@@ -242,14 +269,7 @@ function Editor() {
             defaultValue={element.content_object.answer}
             onChange={(e) => handleEditChange('answer', e.target.value)}
           />
-          <div>
-            <Button variant="outlined" color="primary" onClick={() => handleRemove(element.id)}>
-              Remove
-            </Button>
-            <Button variant="contained" color='primary' onClick={() => handleEdit(element.id)}>
-              Edit
-            </Button>
-          </div>
+          {commonButtons(index)}
         </div>
       );
     } else {
@@ -269,8 +289,8 @@ function Editor() {
           </div>
         </Link>
         <div>
-          {elements.map(element => ( // Render each element
-            renderElementContent(element)
+          {elements.map((element, index) => ( // Render each element
+            renderElementContent(element, index)
           ))}
         </div>
         <div>
