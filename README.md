@@ -22,7 +22,7 @@ Finally, to run the server:
 python3 manage.py runserver
 ```
 and open the url in a browser.
-###### JS:
+###### React.js:
 Make sure npm is installed. Then, to compile the javascript, run: 
 ```bash
 cd frontend
