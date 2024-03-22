@@ -18,6 +18,8 @@ class BookView(APIView):
         elements = Element.objects.filter(book=book).order_by('priority')
         book_serializer = BookSerializer(book)
         element_serializer = ElementSerializer(elements, many=True)
+        #remove answers from element data so client can't see them
+        [element['content_object'].pop('answer', None) for element in element_serializer.data]
         #add book data and associated element data to the response
         response_data = {
             "book": book_serializer.data,
@@ -70,6 +72,22 @@ class CreateBookView(APIView):
 
     
 class EditorView(APIView):
+    def get(self, request, book_id):
+        try:
+            book = Book.objects.get(pk=book_id)
+        except Book.DoesNotExist:
+            return Response({"error": "Book not found"},status=status.HTTP_404_NOT_FOUND)
+        #get book and element data for the specified book and order the elements by priority for rendering
+        elements = Element.objects.filter(book=book).order_by('priority')
+        book_serializer = BookSerializer(book)
+        element_serializer = ElementSerializer(elements, many=True)
+        #add book data and associated element data to the response
+        response_data = {
+            "book": book_serializer.data,
+            "elements": element_serializer.data
+        }
+        return Response(response_data, status=status.HTTP_200_OK)
+
     # handle delete of element
     def delete(self, request, book_id, element_id):
         try:
