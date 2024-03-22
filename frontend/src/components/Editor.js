@@ -21,7 +21,7 @@ function Editor() {
     async function fetchElements() {
       try {
         //request book elements from the backend
-        const response = await axios.get(`/api/book/${bookId}`);
+        const response = await axios.get(`/api/editor/${bookId}`);
         setElements(response.data.elements);
         setTitle(response.data.book.title);
       } catch (error) {
