@@ -3,7 +3,7 @@ A tool allowing users to make and use on creating interactive lessons.
 
 ### Development:
 ###### Django:
-Make sure that python 3.11 and pipenv are installed. To activate environment, run: 
+Make sure that python 3.10 and pipenv are installed. To activate environment, run: 
 ```bash
 pipenv install
 pipenv shell
