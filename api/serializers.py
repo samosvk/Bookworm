@@ -4,7 +4,7 @@ from .models import Book, Text, MultipleChoice, Element, FillBlank
 class BookSerializer(serializers.ModelSerializer):
     class Meta:
         model = Book
-        fields = ('title','created_at')
+        fields = ('id','title','created_at')
 
 class CreateBookSerializer(serializers.ModelSerializer):
     class Meta:

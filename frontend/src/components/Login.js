@@ -14,6 +14,7 @@ import Typography from '@mui/material/Typography';
 import Container from '@mui/material/Container';
 import { createTheme, ThemeProvider } from '@mui/material/styles';
 import { useTheme } from '@mui/material/styles';
+import axios from 'axios';
 
 
 
@@ -23,29 +24,31 @@ export default function LogIn() {
 
   const handleSubmit = async (event) => {
     event.preventDefault();
-    const data = new URLSearchParams(new FormData(event.currentTarget));
+    const formData = new FormData(event.currentTarget);
+    const data = Object.fromEntries(formData.entries());
+  
     try {
-      const response = await fetch('http://localhost:8000/authenticate/login/', {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/x-www-form-urlencoded',
-      },
-      body: data.toString(),
-      credentials: 'include'
-    });
-      if(response.ok){
-        const data = await response.json();
-        navigate("/");
+      const response = await axios.post('http://localhost:8000/authenticate/login/', data, {
+        withCredentials: true, // Allow sending cookies along with the request
+      });
+  
+      if (response.status === 200) {
+        const { access_token } = response.data;
+        // Store the token in local storage or context
+        localStorage.setItem('accessToken', access_token);
+        // Set login status to true
         setLoginStatus(true);
-      } else{
-        const errorData = await response.json();
-        console.error('Failed to submit form', errorData);
-        //set the error
+        // Redirect or navigate to the desired location
+        navigate('/dashboard');
+      } else {
+        console.error('Failed to submit form', response.data);
+        // Set the error
         setLoginStatus(false);
       }
-    }catch(error){
-        console.error('Error', error);
-        setLoginStatus(false);
+    } catch (error) {
+      console.error('Error', error);
+      // Set login status to false
+      setLoginStatus(false);
     }
   };
 

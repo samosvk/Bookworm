@@ -3,11 +3,31 @@ from rest_framework import generics
 from .serializers import * 
 from .models import Book, Element, Text, MultipleChoice, FillBlank
 from rest_framework.views import APIView
+from django.contrib.auth.models import User
+from django.conf import settings
 from rest_framework.response import Response
-from rest_framework.permissions import AllowAny
+from rest_framework.permissions import AllowAny, IsAuthenticated
 from rest_framework import status
+import jwt
 from django.views.decorators.csrf import csrf_exempt
 
+class DashboardView(APIView):
+    permission_classes = [IsAuthenticated]
+
+    def get(self, request):
+        try:
+            # Decode JWT token
+            # token = request.headers.get('Authorization').split(' ')[1]  # Extract token from header
+
+            # Retrieve user information
+            user_id = request.user.id
+            user = User.objects.get(id=user_id)
+            queryset = Book.objects.all()
+            book_serializer = BookSerializer(queryset, many=True)
+            return Response({'username': user.username, 'books': book_serializer.data})
+
+        except Exception as e:
+            return Response({'error': str(e)}, status=400) 
 class BookView(APIView):
     def get(self, request, book_id):
         try:

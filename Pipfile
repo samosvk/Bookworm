@@ -11,6 +11,7 @@ django-webpack-loader = "*"
 django-cors-headers = "*"
 "django.models" = "*"
 "django.db" = "*"
+djangorestframework-simplejwt = "*"
 
 [dev-packages]
 
