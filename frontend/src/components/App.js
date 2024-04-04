@@ -1,15 +1,16 @@
-import React from 'react';
+import React, {useState} from 'react';
 import { createRoot } from "react-dom/client";
-import { Link } from 'react-router-dom';
-import { Button, ThemeProvider, createTheme } from '@mui/material';
+import { BrowserRouter as Router, Route, Routes, Redirect, Navigate } from 'react-router-dom';
+import { ThemeProvider, createTheme } from '@mui/material';
 import Typography from '@mui/material/Typography';
-import { BrowserRouter as Router, Route, Routes } from 'react-router-dom';
 import Login from './Login';
 import Register from './Register';
 import Home from './Home';
 import Book from './Book';
 import Editor from './Editor';
+import Dashboard from './Dashboard';
 import './App.css';
+
 const theme = createTheme({
     palette: {
         primary: {
@@ -30,6 +31,15 @@ const theme = createTheme({
 });
 
 export default function App() {
+    const [loggedIn, setLoggedIn] = useState(false);
+    function requireAuth() {
+        const accessToken = localStorage.getItem('accessToken');
+        if (!accessToken) {
+            return false;
+        } else{
+            return true;
+        }
+    }
     return (
         <ThemeProvider theme={theme}>
             <Router>
@@ -39,6 +49,7 @@ export default function App() {
                     <Route path="/login" element={<Login />} />
                     <Route path='/book/:bookId' element={<Book />} />
                     <Route path='/editor/:bookId' element={<Editor />} />
+                    <Route path='/dashboard' element={<Dashboard />} />
                 </Routes>
             </Router>
         </ThemeProvider>
