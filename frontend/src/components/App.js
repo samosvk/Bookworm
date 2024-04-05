@@ -31,15 +31,6 @@ const theme = createTheme({
 });
 
 export default function App() {
-    const [loggedIn, setLoggedIn] = useState(false);
-    function requireAuth() {
-        const accessToken = localStorage.getItem('accessToken');
-        if (!accessToken) {
-            return false;
-        } else{
-            return true;
-        }
-    }
     return (
         <ThemeProvider theme={theme}>
             <Router>

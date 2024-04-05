@@ -16,9 +16,6 @@ class DashboardView(APIView):
 
     def get(self, request):
         try:
-            # Decode JWT token
-            # token = request.headers.get('Authorization').split(' ')[1]  # Extract token from header
-
             # Retrieve user information
             user_id = request.user.id
             user = User.objects.get(id=user_id)
