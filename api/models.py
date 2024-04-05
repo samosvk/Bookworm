@@ -8,6 +8,7 @@ from django.contrib.contenttypes.fields import GenericForeignKey, GenericRelatio
 class Book(models.Model):
     title = models.CharField(max_length=100)
     created_at = models.DateTimeField(auto_now_add=True)
+    users = models.ManyToManyField('auth.User', related_name='books')
 
 class Element(models.Model):
     book = models.ForeignKey(Book, on_delete=models.CASCADE)

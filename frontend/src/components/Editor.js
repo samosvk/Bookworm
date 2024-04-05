@@ -3,6 +3,7 @@ import { Container, Typography, Paper, Button, TextField, MenuItem, InputLabel, 
 import ArrowUpwardIcon from '@mui/icons-material/ArrowUpward';
 import ArrowDownwardIcon from '@mui/icons-material/ArrowDownward';
 import { useParams, Link } from 'react-router-dom';
+import Header from './Header';
 import axios from 'axios';
 
 function Editor() {
@@ -278,36 +279,39 @@ function Editor() {
   };
   
   return (
-    <Container maxWidth="xl">
-      <Paper elevation={3} style={{ padding: '20px', margin: '20px 0' }}>
-        <Typography variant="h4" style={{display:'flex', justifyContent:'center'}}>
-          {title}
-        </Typography>
-        <Link to={`/book/${bookId}`}>
+    <div>
+      <Header />
+      <Container maxWidth="lg" style={{paddingTop: '60px'}}>
+        <Paper elevation={3} style={{ padding: '20px', margin: '20px 0' }}>
+          <Typography variant="h4" style={{display:'flex', justifyContent:'center'}}>
+            {title}
+          </Typography>
           <div style={{display: 'flex', justifyContent: 'flex-end'}}>
-            <Button>View Book</Button>
+            <Link to={`/book/${bookId}`}>
+              <Button>View Book</Button>
+            </Link>
           </div>
-        </Link>
-        <div>
-          {elements.map((element, index) => ( // Render each element
-            renderElementContent(element, index)
-          ))}
-        </div>
-        <div>
-          {displayAddForm()}
-        </div>
-      </Paper>
-      <Snackbar
-        anchorOrigin={{
-          vertical: 'top',
-          horizontal: 'center',
-        }}
-        open={snackbarOpen}
-        autoHideDuration={800}
-        onClose={handleSnackbarClose}
-        message={snackbarMessage}
-      />
-    </Container>
+          <div style={{paddingRight: '20px', paddingLeft:'20px'}}>
+            {elements.map((element, index) => ( // Render each element
+              renderElementContent(element, index)
+            ))}
+          </div>
+          <div>
+            {displayAddForm()}
+          </div>
+        </Paper>
+        <Snackbar
+          anchorOrigin={{
+            vertical: 'top',
+            horizontal: 'center',
+          }}
+          open={snackbarOpen}
+          autoHideDuration={800}
+          onClose={handleSnackbarClose}
+          message={snackbarMessage}
+        />
+      </Container>
+    </div>
   );
 }
 

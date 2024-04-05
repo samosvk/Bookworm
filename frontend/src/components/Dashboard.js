@@ -33,7 +33,7 @@ export default function Dashboard() {
       {username ? (
         <div>
           <Header />
-          <div>
+          <div style={{marginTop: '80px'}}>
             <h1>Welcome, {username}!</h1>
             <div>
               {/* Map through books array and render a button for each */}

@@ -113,24 +113,24 @@ function Book() {
   
   return (
     <div>
-        <Header />
-    <Container maxWidth="xl">
-      <Paper elevation={3} style={{ padding: '20px', margin: '20px 0' }}>
-        <Typography variant="h4" style={{display:'flex', justifyContent:'center'}}>
-          {title}
-        </Typography>
-        <Link to={`/editor/${bookId}`}>
+      <Header />
+      <Container maxWidth="lg" style={{paddingTop: '60px'}}>
+        <Paper elevation={3} style={{ padding: '20px', margin: '20px 0' }}>
+          <Typography variant="h4" style={{display:'flex', justifyContent:'center'}}>
+            {title}
+          </Typography>
           <div style={{display: 'flex', justifyContent: 'flex-end'}}>
-            <Button>View Editor</Button>
+            <Link to={`/editor/${bookId}`}>
+              <Button>View Editor</Button>
+            </Link>
           </div>
-        </Link>
-        <div>
-          {elements.map(element => ( // Render each element
-            renderElementContent(element)
-          ))}
-        </div>
-      </Paper>
-    </Container>
+          <div style={{paddingRight:'20px', paddingLeft: '20px'}}>
+            {elements.map(element => ( // Render each element
+              renderElementContent(element)
+            ))}
+          </div>
+        </Paper>
+      </Container>
     </div>
   );
 }
