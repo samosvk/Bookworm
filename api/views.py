@@ -6,26 +6,33 @@ from rest_framework.views import APIView
 from django.contrib.auth.models import User
 from django.conf import settings
 from rest_framework.response import Response
-from rest_framework.permissions import AllowAny, IsAuthenticated
+from rest_framework.permissions import AllowAny, IsAuthenticated, IsAdminUser
 from rest_framework import status
 import jwt
 from django.views.decorators.csrf import csrf_exempt
 
+class UserInfoView(APIView):
+    permission_classes = [IsAuthenticated]
+    def get(self, request):
+        user_id = request.user.id
+        user = User.objects.get(id=user_id)
+        return Response({'username': user.username,
+                          'is_superuser': user.is_superuser})
 class DashboardView(APIView):
     permission_classes = [IsAuthenticated]
 
     def get(self, request):
         try:
-            # Retrieve user information
             user_id = request.user.id
             user = User.objects.get(id=user_id)
             queryset = Book.objects.all()
             book_serializer = BookSerializer(queryset, many=True)
-            return Response({'username': user.username, 'books': book_serializer.data})
+            return Response({'username': user.username, 'books': book_serializer.data, 'is_superuser': user.is_superuser})
 
         except Exception as e:
             return Response({'error': str(e)}, status=400) 
 class BookView(APIView):
+    permission_classes = [IsAuthenticated]
     def get(self, request, book_id):
         try:
             book = Book.objects.get(pk=book_id)
@@ -43,6 +50,7 @@ class BookView(APIView):
             "elements": element_serializer.data
         }
         return Response(response_data, status=status.HTTP_200_OK)
+
 
     #Check if the answer is correct
     def post(self, request, book_id, element_id):
@@ -81,14 +89,27 @@ class BookView(APIView):
             return Response({"error": "Invalid priority"}, status=status.HTTP_400_BAD_REQUEST)
         return Response(status=status.HTTP_200_OK)
 
+#used for crud operations on the book's info rather than elements
 class CreateBookView(APIView):
     serializer_class = CreateBookSerializer
-
-    def post(self, request, format=None):
-        pass
+    #make a book
+    def post(self, request):
+        try:
+            book = Book.objects.create(title=request.data['title'])
+        except Exception as e:
+            return Response({'error': str(e)}, status=400)
+        return Response(status=status.HTTP_201_CREATED)
+    def delete(self, request, book_id):
+        try:
+            book = Book.objects.get(pk=book_id)
+        except Book.DoesNotExist:
+            return Response({"error": "Book not found"},status=status.HTTP_404_NOT_FOUND)
+        book.delete()
+        return Response(status=status.HTTP_200_OK)
 
     
 class EditorView(APIView):
+    permission_classes = [IsAdminUser]
     def get(self, request, book_id):
         try:
             book = Book.objects.get(pk=book_id)

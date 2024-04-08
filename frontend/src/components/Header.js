@@ -12,7 +12,7 @@ const Header = () => {
             try {
                 const accessToken = localStorage.getItem('accessToken');
                 if (accessToken) {
-                    const response = await axios.get('/api/dashboard/', {
+                    const response = await axios.get('/api/user_info/', {
                         headers: {
                             Authorization: `Bearer ${accessToken}`,
                         }
@@ -29,7 +29,6 @@ const Header = () => {
 
     const handleLogout = () => {
         axios.post('http://localhost:8000/authenticate/logout/')
-        // For example, clear localStorage and redirect to login page
         localStorage.clear();
         window.location.href = '/';
     };

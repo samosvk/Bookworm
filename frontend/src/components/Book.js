@@ -12,12 +12,18 @@ function Book() {
   const [selectedOptions, setSelectedOptions] = useState({}); //make a dict to store selected options
   const [correctAnswers, setCorrectAnswers] = useState({}); //make a dict to track correctness of answers
   const [title, setTitle] = useState(''); //store the book title
+  const [isSuperUser, setIsSuperUser] = useState(false); //store the user's superuser status
+  const accessToken = localStorage.getItem('accessToken');
 
   useEffect(() => { // Fetch book elements whenever bokId changes
     async function fetchElements() {
       try {
         //request book elements from the backend
-        const response = await axios.get(`/api/book/${bookId}`);
+        const response = await axios.get(`/api/book/${bookId}`, {
+          headers: {
+            Authorization: `Bearer ${accessToken}`,
+          }
+        });
         setElements(response.data.elements);
         setTitle(response.data.book.title);
       } catch (error) {
@@ -27,6 +33,24 @@ function Book() {
 
     fetchElements();
   }, [bookId]);
+
+  useEffect(() => {
+    async function fetchUserData() {
+      try {
+        if (accessToken) {
+          const response = await axios.get('/api/user_info/', {
+            headers: {
+              Authorization: `Bearer ${accessToken}`,
+            }
+          });
+          setIsSuperUser(response.data.is_superuser);
+        }
+      } catch (error) {
+        console.error('Error fetching user data:', error);
+      }
+    }
+    fetchUserData();
+  }, []);
 
   const handleOptionChange = (elementId, option) => {
     setSelectedOptions(prevState => ({
@@ -40,7 +64,11 @@ function Book() {
     const selectOption = selectedOptions[elementId];
     if (selectOption != null){
       try {
-        const response = await axios.post(`/api/book/${bookId}/${elementId}`, {option: selectOption});
+        const response = await axios.post(`/api/book/${bookId}/${elementId}`, {option: selectOption}, {
+          headers: {
+            Authorization: `Bearer ${accessToken}`,
+          }
+        });
         const { is_correct } = response.data;
         setCorrectAnswers(prevState => ({
           ...prevState,
@@ -119,11 +147,14 @@ function Book() {
           <Typography variant="h4" style={{display:'flex', justifyContent:'center'}}>
             {title}
           </Typography>
-          <div style={{display: 'flex', justifyContent: 'flex-end'}}>
-            <Link to={`/editor/${bookId}`}>
-              <Button>View Editor</Button>
-            </Link>
-          </div>
+          {/* render button to view editor if sudo */}
+          {isSuperUser && (
+            <div style={{display: 'flex', justifyContent: 'flex-end'}}>
+              <Link to={`/editor/${bookId}`}>
+                <Button>View Editor</Button>
+              </Link>
+            </div>
+          )}
           <div style={{paddingRight:'20px', paddingLeft: '20px'}}>
             {elements.map(element => ( // Render each element
               renderElementContent(element)
