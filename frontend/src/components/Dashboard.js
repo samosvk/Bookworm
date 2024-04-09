@@ -8,7 +8,7 @@ export default function Dashboard() {
   const [books, setBooks] = useState([]);
   const [isSuperUser, setIsSuperUser] = useState(false);
   const [showAddForm, setShowAddForm] = useState(false);
-  const [showEditForm, setShowEditForm] = useState(-1);
+  const [showEditForm, setShowEditForm] = useState(-1); //set the element to show form for and <0 to hide
   const [addTitle, setAddTitle] = useState('');
   const [editTitle, setEditTitle] = useState('');
   const accessToken = localStorage.getItem('accessToken');
@@ -53,7 +53,6 @@ export default function Dashboard() {
       setSnackbarMessage('Book created successfully');
       setSnackbarOpen(true);
       setChange(change + 1);
-      setTitle('');
     } catch (error) {
       console.error('Error creating book:', error);
     }
@@ -71,7 +70,6 @@ export default function Dashboard() {
       setSnackbarMessage('Book edited successfully');
       setSnackbarOpen(true);
       setChange(change + 1);
-      setEditTitle('');
     } catch (error) {
       console.error('Error editing book:', error);
     }
@@ -117,11 +115,15 @@ export default function Dashboard() {
       );
     } else {
         return (
+          //on click show form and reset old title
           <div>
-            <Button variant="contained" color="primary" onClick={() => setShowEditForm(bookId)}>
+            <Button variant="contained" color="primary" onClick={() => {
+              setShowEditForm(bookId);
+              setEditTitle('');
+              }}>
               Edit Title
             </Button>
-            <Button variant="contained" color="secondary" onClick={() => handleDeleteBook(book.id)}>
+            <Button variant="contained" color="secondary" onClick={() => handleDeleteBook(bookId)}>
               Delete Book
             </Button>
           </div>
@@ -153,7 +155,11 @@ export default function Dashboard() {
       );
     } else {
         return (
-          <Button variant="contained" color="primary" onClick={() => setShowAddForm(true)}>
+          //on click show form and reset old title
+          <Button variant="contained" color="primary" onClick={() => {
+            setShowAddForm(true);
+            setAddTitle('');
+            }}>
             Create New Book
           </Button>
       );
