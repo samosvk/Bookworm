@@ -99,6 +99,18 @@ class CreateBookView(APIView):
         except Exception as e:
             return Response({'error': str(e)}, status=400)
         return Response(status=status.HTTP_201_CREATED)
+    
+    def put(self, request, book_id):
+        try:
+            book = Book.objects.get(pk=book_id)
+        except Book.DoesNotExist:
+            return Response({"error": "Book not found"},status=status.HTTP_404_NOT_FOUND)
+        for attribute, value in request.data.items():
+            if hasattr(book, attribute):
+                setattr(book, attribute, value)
+        book.save()
+        return Response(status=status.HTTP_200_OK)
+
     def delete(self, request, book_id):
         try:
             book = Book.objects.get(pk=book_id)

@@ -5,11 +5,12 @@ import { Button, Grid, Card, CardActionArea, CardContent, Box, CardMedia, Typogr
 import AutoStoriesIcon from '@mui/icons-material/AutoStories';
 import Header from './Header';
 export default function Dashboard() {
-  const [username, setUsername] = useState('');
   const [books, setBooks] = useState([]);
   const [isSuperUser, setIsSuperUser] = useState(false);
-  const [showForm, setShowForm] = useState(false);
-  const [title, setTitle] = useState('');
+  const [showAddForm, setShowAddForm] = useState(false);
+  const [showEditForm, setShowEditForm] = useState(-1);
+  const [addTitle, setAddTitle] = useState('');
+  const [editTitle, setEditTitle] = useState('');
   const accessToken = localStorage.getItem('accessToken');
   const [snackbarOpen, setSnackbarOpen] = useState(false);
   const [snackbarMessage, setSnackbarMessage] = useState('');
@@ -24,7 +25,6 @@ export default function Dashboard() {
               Authorization: `Bearer ${accessToken}`,
             }
           });
-          setUsername(response.data.username);
           setBooks(response.data.books)
           setIsSuperUser(response.data.is_superuser);
         }
@@ -43,13 +43,13 @@ export default function Dashboard() {
 
   const handleCreateBook = async () => {
     try{
-      axios.post('/api/create_book/',  {title: title },
+      axios.post('/api/create_book/',  {title: addTitle },
         {
         headers: {
           Authorization: `Bearer ${accessToken}`,
         }
       });
-      setShowForm(false);
+      setShowAddForm(false);
       setSnackbarMessage('Book created successfully');
       setSnackbarOpen(true);
       setChange(change + 1);
@@ -58,6 +58,25 @@ export default function Dashboard() {
       console.error('Error creating book:', error);
     }
   };
+
+  const handleEditBook = async (bookId) => {
+    try{
+      axios.put(`/api/create_book/${bookId}/`, {title: editTitle},
+        {
+        headers: {
+          Authorization: `Bearer ${accessToken}`,
+        }
+      });
+      setShowEditForm(-1);
+      setSnackbarMessage('Book edited successfully');
+      setSnackbarOpen(true);
+      setChange(change + 1);
+      setEditTitle('');
+    } catch (error) {
+      console.error('Error editing book:', error);
+    }
+  };
+
 
   const handleDeleteBook = async (bookId) => {
     try{
@@ -74,15 +93,51 @@ export default function Dashboard() {
     }
   };
 
-  const displayCreateBookForm = () => {
-    if (showForm) {
+  const displayEditBookForm = (bookId) => {
+    if (showEditForm == bookId) {
       return (
         <Box style={{ display: 'flex'}}>
           <Paper>
-            <TextField label="Book Title" variant="outlined" onChange={(e) => setTitle(e.target.value.trim())}/>
+            <TextField label="Book Title" variant="outlined" onChange={(e) => setEditTitle(e.target.value.trim())}/>
           </Paper>
           <Button variant="contained" color="primary" onClick={ () => {
-              if (title.length !== 0 && title.length <= 100){
+              if (editTitle.length !== 0 && editTitle.length <= 100){
+                handleEditBook(bookId) 
+              } else {
+                setSnackbarMessage('Title must not be empty and must be less than 100 characters');
+                setSnackbarOpen(true);
+              }
+            }}>
+            Update
+          </Button>
+          <Button variant='contained' color='secondary' onClick={() => setShowEditForm(-1)}>
+            Cancel
+          </Button>
+      </Box>
+      );
+    } else {
+        return (
+          <div>
+            <Button variant="contained" color="primary" onClick={() => setShowEditForm(bookId)}>
+              Edit Title
+            </Button>
+            <Button variant="contained" color="secondary" onClick={() => handleDeleteBook(book.id)}>
+              Delete Book
+            </Button>
+          </div>
+      );
+    }
+  }
+
+  const displayCreateBookForm = () => {
+    if (showAddForm) {
+      return (
+        <Box style={{ display: 'flex'}}>
+          <Paper>
+            <TextField label="Book Title" variant="outlined" onChange={(e) => setAddTitle(e.target.value.trim())}/>
+          </Paper>
+          <Button variant="contained" color="primary" onClick={ () => {
+              if (addTitle.length !== 0 && addTitle.length <= 100){
                 handleCreateBook() 
               } else {
                 setSnackbarMessage('Title must not be empty and must be less than 100 characters');
@@ -91,14 +146,14 @@ export default function Dashboard() {
             }}>
             Create Book
           </Button>
-          <Button variant='contained' color='secondary' onClick={() => setShowForm(false)}>
+          <Button variant='contained' color='secondary' onClick={() => setShowAddForm(false)}>
             Cancel
           </Button>
       </Box>
       );
     } else {
         return (
-          <Button variant="contained" color="primary" onClick={() => setShowForm(true)}>
+          <Button variant="contained" color="primary" onClick={() => setShowAddForm(true)}>
             Create New Book
           </Button>
       );
@@ -131,9 +186,7 @@ export default function Dashboard() {
               </Card>
               {isSuperUser && (
                 <Box display='flex' justifyContent='center' marginTop='10px'>
-                <Button variant="contained" color="secondary" onClick={() => handleDeleteBook(book.id)}>
-                  Delete Book
-                </Button>
+                {displayEditBookForm(book.id)}
                 </Box>
               )}
             </Grid>
