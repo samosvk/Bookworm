@@ -17,12 +17,17 @@ function Editor() {
   const [editedElement, setEditedElement] = useState({}); //store edited element data to send in put request
   const [snackbarOpen, setSnackbarOpen] = useState(false);
   const [snackbarMessage, setSnackbarMessage] = useState('');
+  const accessToken = localStorage.getItem('accessToken');
 
   useEffect(() => { // Fetch book elements whenever bokId changes
     async function fetchElements() {
       try {
         //request book elements from the backend
-        const response = await axios.get(`/api/editor/${bookId}`);
+        const response = await axios.get(`/api/editor/${bookId}`,{
+          headers: {
+            Authorization: `Bearer ${accessToken}`,
+          }
+        });
         setElements(response.data.elements);
         setTitle(response.data.book.title);
       } catch (error) {
@@ -103,7 +108,11 @@ function Editor() {
   //Remove associated element
   const handleRemove = async (elementId) => {
     try {
-      const response = await axios.delete(`/api/editor/${bookId}/${elementId}`);
+      const response = await axios.delete(`/api/editor/${bookId}/${elementId}`, {
+        headers: {
+          Authorization: `Bearer ${accessToken}`,
+        }         
+      });
       if (response.status === 200) {
         setSnackbarMessage('Element deleted');
         setSnackbarOpen(true);
@@ -117,7 +126,14 @@ function Editor() {
   //Add new element
   const handleAdd = async () => {
     try {
-      const response = await axios.post(`/api/editor/${bookId}/`, {type: addElementType, element: newElement});
+      const response = await axios.post(`/api/editor/${bookId}/`, {
+        type: addElementType, 
+        element: newElement,
+      }, {
+        headers: {
+          Authorization: `Bearer ${accessToken}`,
+        }
+      });
       setShowForm(false); // hide the form after adding
       if (response.status === 201) {
         setSnackbarMessage('Element added');
@@ -139,7 +155,11 @@ function Editor() {
         ...prevState,
         [elementId]: {}
       }));
-      const response = await axios.put(`/api/editor/${bookId}/${elementId}`, editedElementData);
+      const response = await axios.put(`/api/editor/${bookId}/${elementId}`, editedElementData,{
+          headers: {
+            Authorization: `Bearer ${accessToken}`,
+          }
+      });
       //if the response is successful, show a snackbar message
       if (response.status === 200) {
         setSnackbarMessage('Element updated');
@@ -172,7 +192,13 @@ function Editor() {
 
     const handleMove = async (element, direction) => {
       try{
-        const response = await axios.put(`/api/book/${bookId}/${element.id}`, {direction: direction});
+        const response = await axios.put(`/api/book/${bookId}/${element.id}`, {
+          direction: direction
+        }, {
+          headers: {
+            Authorization: `Bearer ${accessToken}`,
+          }
+      });
         if (response.status === 200) {
           setSnackbarMessage('Element moved');
           setSnackbarOpen(true);
