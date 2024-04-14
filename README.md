@@ -13,10 +13,7 @@ In order to make an instance of database, run:
 python3 manage.py makemigrations api
 python3 manage.py migrate
 ```
-and to populate with an example book run:
-```bash
-python3 populate.py
-```
+
 Finally, to run the server: 
 ```bash
 python3 manage.py runserver
@@ -29,3 +26,10 @@ cd frontend
 npm install
 npm run dev
 ```
+
+### Usage:
+You can add an admin user with
+```bash
+python manage.py createsuperuser
+```
+and you can then log in to this user in the application. Admins are able to create and edit books while normal users can only view books. Normal users can be created through using the registration page on the website.
