@@ -6,7 +6,9 @@ import { Logout } from '@mui/icons-material'; // Import logout icon from MUI
 import HomeIcon from '@mui/icons-material/Home';
 
 const Header = () => {
+    const [loggedIn, setLoggedIn] = useState(false);
     const [username, setUsername] = useState('');
+
     useEffect(() => {
         const fetchUsername = async () => {
             try {
@@ -18,6 +20,7 @@ const Header = () => {
                         }
                     });
                     setUsername(response.data.username);
+                    setLoggedIn(true);
                 }
             } catch (error) {
                 console.error('Error fetching username:', error);
@@ -39,33 +42,43 @@ const Header = () => {
                 <Typography variant="h6" component="div" sx={{ flexGrow: 1 }}>
                     Bookworm
                 </Typography>
-                <Link to='/dashboard'>
-                    <IconButton >
-                        <HomeIcon />
-                    </IconButton>
-                </Link>
-                <Select
-                    value={username}
-                    displayEmpty
-                    renderValue={() => (
-                        <div style={{ display: 'flex', alignItems: 'center' }}>
-                            <Avatar sx={{ bgcolor: 'primary.main', mr: 1 }}></Avatar>
-                            {username}
-                        </div>
-                    )}
-                >
-                    <MenuItem value={username} disabled>
-                        <Avatar sx={{ bgcolor: 'primary.main', mr: 1 }}></Avatar>
-                        {username}
-                    </MenuItem>
-                    <MenuItem onClick={handleLogout}>
-                        <Logout sx={{ mr: 1 }} />
-                        Logout
-                    </MenuItem>
-                </Select>
+                {loggedIn ? (
+                    <>
+                        <Link to='/dashboard'>
+                            <IconButton >
+                                <HomeIcon />
+                            </IconButton>
+                        </Link>
+                        <Select
+                            value={username}
+                            displayEmpty
+                            renderValue={() => (
+                                <div style={{ display: 'flex', alignItems: 'center' }}>
+                                    <Avatar sx={{ bgcolor: 'primary.main', mr: 1 }}></Avatar>
+                                    {username}
+                                </div>
+                            )}
+                        >
+                            <MenuItem value={username} disabled>
+                                <Avatar sx={{ bgcolor: 'primary.main', mr: 1 }}></Avatar>
+                                {username}
+                            </MenuItem>
+                            <MenuItem onClick={handleLogout}>
+                                <Logout sx={{ mr: 1 }} />
+                                Logout
+                            </MenuItem>
+                        </Select>
+                    </>
+                ) : (
+                    <div>
+                        <Button component={Link} to="/login" color="inherit">Login</Button>
+                        <Button component={Link} to="/register" color="inherit">Register</Button>
+                    </div>
+                )}
             </Toolbar>
         </AppBar>
     );
 }
 
 export default Header;
+
