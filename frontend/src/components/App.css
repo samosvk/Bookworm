@@ -1,3 +1,33 @@
-body {
-    background-color: #DCF2F1;
+/* body {
+  background-color: #dcf2f1;
+} */
+
+.footer-grid-container {
+  padding: 0px 25px;
+}
+
+.logo-container {
+  display: flex;
+  justify-content: flex-start;
+  align-items: center;
+}
+
+.footer-icons {
+  padding: 0px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  gap: 10px;
+}
+
+.footer-links-container {
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  justify-content: flex-end;
+  gap: 10px;
+}
+
+.footer-links-container p {
+  margin-right: 15px;
 }
