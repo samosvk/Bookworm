@@ -1,3 +1,7 @@
+Tutorial video on how to run: 
+
+https://www.youtube.com/watch?v=dulkhEhdI9w 
+
 # Bookworm
 
 A tool allowing users to make and use interactive lessons.
