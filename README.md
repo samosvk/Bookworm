@@ -1,6 +1,6 @@
 # Bookworm
 
-A tool allowing users to make and use on creating interactive lessons.
+A tool allowing users to make and use interactive lessons.
 
 ### Development:
 
