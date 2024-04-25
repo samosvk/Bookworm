@@ -22,7 +22,7 @@ body {
 .site-title {
   margin: 0;
   text-align: center;
-  padding: 30px;
+  padding: 10px;
 }
 
 .App-container {
@@ -72,10 +72,10 @@ body {
   align-items: center;
 }
 
-.learnmore:hover,
+/* .learnmore:hover,
 .button:hover {
   background-color: rgb(222, 144, 0) !important;
-}
+} */
 
 /* .container {
   background-color: #7fc7d9;

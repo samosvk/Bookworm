@@ -47,7 +47,7 @@ const Header = () => {
 
   return (
     <div className="header-container" style={{ display: "inline-block" }}>
-      <AppBar style={{ display: "block", position: "absolute", top: "0px" }}>
+      <AppBar style={{ display: "block", position: "fixed", top: "0px" }}>
         <Toolbar>
           <Typography variant="h6" component="div" sx={{ flexGrow: 1 }}>
             Bookworm

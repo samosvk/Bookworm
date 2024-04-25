@@ -15,6 +15,14 @@ export default function Homepage() {
       <Header />
       <div className="App">
         <div className="App-container">
+          <div class="book">
+            <div class="book__pg-shadow"></div>
+            <div class="book__pg"></div>
+            <div class="book__pg book__pg--2"></div>
+            <div class="book__pg book__pg--3"></div>
+            <div class="book__pg book__pg--4"></div>
+            <div class="book__pg book__pg--5"></div>
+          </div>
           <div className="site-title">
             <Typography
               className="title"
@@ -26,43 +34,38 @@ export default function Homepage() {
             </Typography>
           </div>
           <div className="hero">
-            <Grid container spacing={2} className="grid-container">
-              <Grid item xs={3} className="image-container">
-                <AcUnitIcon
-                  className="icon"
-                  sx={{ height: "300px", width: "300px", color: "orange" }}
-                />
-              </Grid>
-              <Grid item xs={9} className="content-container">
-                <div>
-                  <Typography
-                    variant="h4"
-                    gutterBottom
-                    style={{ fontWeight: "500", lineHeight: "2.5rem" }}
-                  >
-                    A tool allowing users to collaborate on creating online
-                    textbooks and class documents.
-                  </Typography>
-                </div>
-                <div>
-                  <Stack spacing={2} direction="row">
-                    <Link to="/">
-                      <Button
-                        className="learnmore"
-                        variant="contained"
-                        sx={{ padding: "25px 40px" }}
-                      >
-                        Learn More
-                      </Button>
-                    </Link>
-                  </Stack>
-                </div>
-              </Grid>
+            <Grid item xs={9} className="content-container">
+              <div>
+                <Typography
+                  variant="h4"
+                  gutterBottom
+                  style={{
+                    fontWeight: "500",
+                    lineHeight: "2.5rem",
+                  }}
+                >
+                  A tool allowing users to make and user interactive lessons.
+                </Typography>
+              </div>
             </Grid>
+            <div>
+              <Grid item xs={9} className="content-container">
+                <Stack spacing={2} direction="row">
+                  <Link to="https://justinklonoski25.github.io/WEBSITE/">
+                    <Button
+                      className="learnmore"
+                      variant="contained"
+                      sx={{ padding: "25px 40px" }}
+                    >
+                      Learn More
+                    </Button>
+                  </Link>
+                </Stack>
+              </Grid>
+            </div>
           </div>
         </div>
       </div>
-      <Footer />
     </div>
   );
 }
