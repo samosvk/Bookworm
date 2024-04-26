@@ -1,5 +1,4 @@
 import React, { useState, useEffect } from "react";
-import Youtube from "react-youtube";
 import {
   Container,
   Typography,
@@ -117,6 +116,7 @@ function Editor() {
           <div>
             <TextField
               label="Video URL"
+              fullWidth
               onChange={(e) =>
                 setNewElement({ ...newElement, url: e.target.value })
               }
