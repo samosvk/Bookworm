@@ -49,16 +49,11 @@ const Header = () => {
     <div className="header-container" style={{ display: "inline-block" }}>
       <AppBar style={{ display: "block", position: "fixed", top: "0px" }}>
         <Toolbar>
-          <Typography variant="h6" component="div" sx={{ flexGrow: 1 }}>
-            Bookworm
-          </Typography>
+            <Typography variant="h6" component="div" sx={{ flexGrow: 1 }}>
+              Bookworm
+            </Typography>
           {loggedIn ? (
-            <>
-              <Link to="/dashboard">
-                <IconButton>
-                  <HomeIcon />
-                </IconButton>
-              </Link>
+          <>
               <Select
                 value={username}
                 displayEmpty
@@ -69,6 +64,10 @@ const Header = () => {
                   </div>
                 )}
               >
+              <Link to="/dashboard" style={{ textDecoration: "none", color: "inherit" }}>
+                <Typography variant="h6" component="div" sx={{ flexGrow: 1 }}>
+                  Bookworm
+                </Typography>
                 <MenuItem value={username} disabled>
                   <Avatar sx={{ bgcolor: "primary.main", mr: 1 }}></Avatar>
                   {username}
