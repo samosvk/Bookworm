@@ -1,5 +1,5 @@
 from rest_framework import serializers
-from .models import Book, Text, MultipleChoice, Element, FillBlank
+from .models import Book, Text, MultipleChoice, Element, FillBlank, Video
 
 class BookSerializer(serializers.ModelSerializer):
     class Meta:
@@ -26,6 +26,11 @@ class FillBlankSerializer(serializers.ModelSerializer):
         model = FillBlank
         fields = ('book', 'question', 'answer')
 
+class VideoSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Video
+        fields = ('book', 'url')
+
 class ElementSerializer(serializers.ModelSerializer):
     #call get_conent_object to get the content of the element
     content_object = serializers.SerializerMethodField()
@@ -43,7 +48,8 @@ class ElementSerializer(serializers.ModelSerializer):
         serializers_map ={
             MultipleChoice: MultipleChoiceSerializer,
             Text: TextSerializer,
-            FillBlank: FillBlankSerializer
+            FillBlank: FillBlankSerializer,
+            Video: VideoSerializer
         }
         return serializers_map.get(type(instance), None)
     class Meta:

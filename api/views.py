@@ -1,7 +1,7 @@
 from django.shortcuts import render
 from rest_framework import generics
 from .serializers import * 
-from .models import Book, Element, Text, MultipleChoice, FillBlank
+from .models import Book, Element, Text, MultipleChoice, FillBlank, Video
 from rest_framework.views import APIView
 from django.contrib.auth.models import User
 from django.conf import settings
@@ -154,7 +154,6 @@ class EditorView(APIView):
         element_type = request.data.get('type')
         #get the provided fields for the element
         fields = request.data.get('element')
-
         #get serializer for the associated type of the elements
         serializer_class = self.get_serializer_class(element_type)
         if serializer_class is None:
@@ -174,6 +173,7 @@ class EditorView(APIView):
             'Text': TextSerializer,
             'FillBlank': FillBlankSerializer,
             'MultipleChoice': MultipleChoiceSerializer,
+            'Video': VideoSerializer
         }
         return serializers_map.get(element_type)
     # handle update of element

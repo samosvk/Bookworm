@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from "react";
+import Youtube from "react-youtube";
 import {
   Container,
   Typography,
@@ -9,6 +10,7 @@ import {
   InputLabel,
   Select,
   Snackbar,
+  CardMedia,
 } from "@mui/material";
 import ArrowUpwardIcon from "@mui/icons-material/ArrowUpward";
 import ArrowDownwardIcon from "@mui/icons-material/ArrowDownward";
@@ -110,6 +112,17 @@ function Editor() {
             />
           </div>
         );
+      case "Video":
+        return (
+          <div>
+            <TextField
+              label="Video URL"
+              onChange={(e) =>
+                setNewElement({ ...newElement, url: e.target.value })
+              }
+            />
+          </div>
+        );
       default:
         return null;
     }
@@ -146,6 +159,7 @@ function Editor() {
             <MenuItem value="Text">Text</MenuItem>
             <MenuItem value="MultipleChoice">Multiple Choice</MenuItem>
             <MenuItem value="FillBlank">Fill in the Blank</MenuItem>
+            <MenuItem value="Video">Video</MenuItem>
           </Select>
           {renderAddBoxes()}
         </div>
@@ -388,6 +402,40 @@ function Editor() {
             defaultValue={element.content_object.answer}
             onChange={(e) => handleEditChange("answer", e.target.value)}
           />
+          {commonButtons(index)}
+        </div>
+      );
+    } else if (element.element_type === "Video") {
+      return (
+        <div
+          style={{
+            marginBottom: "20px",
+          }}
+        >
+          <div
+            style={{
+              marginBottom: "5px",
+              paddingLeft: "100px",
+              paddingRight: "100px",
+            }}
+          >
+            <CardMedia
+              component="iframe"
+              src={element.content_object.url}
+              sx={{
+                aspectRatio: "16/9",
+              }}
+            />
+          </div>
+          <div>
+            <TextField
+              label="Video URL"
+              variant="outlined"
+              defaultValue={element.content_object.url}
+              fullWidth
+              onChange={(e) => handleEditChange("url", e.target.value)}
+            />
+          </div>
           {commonButtons(index)}
         </div>
       );
