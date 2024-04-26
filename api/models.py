@@ -33,6 +33,8 @@ class Element(models.Model):
             self.element_type = 'Text'
         elif isinstance(self.content_object, FillBlank):
             self.element_type = 'FillBlank'
+        elif isinstance(self.content_object, Video):
+            self.element_type = 'Video'
 
         super().save(*args, **kwargs)
 
@@ -63,3 +65,18 @@ class FillBlank(models.Model):
     question = models.TextField()
     answer = models.CharField(max_length=100, default=None)
     
+class Video(models.Model):
+    book = models.ForeignKey(Book, on_delete=models.CASCADE)
+    element = GenericRelation(Element)
+    url = models.URLField()
+
+    def generate_embed_link(self, youtube_url):
+        # Validate YouTube URL
+        if 'youtube.com' not in youtube_url:
+            return None
+        embed_url = youtube_url.replace('watch?v=', 'embed/')
+        return embed_url
+
+    def save(self, *args, **kwargs):
+        self.url = self.generate_embed_link(self.url)
+        super().save(*args, **kwargs)
