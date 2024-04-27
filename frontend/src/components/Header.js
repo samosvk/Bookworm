@@ -46,7 +46,17 @@ const Header = () => {
 
   return (
     <div className="header-container" style={{ display: "inline-block" }}>
-      <AppBar style={{ display: "block", position: "fixed", top: "0px" }}>
+      <AppBar
+        style={{
+          display: "block",
+          position: "fixed",
+          top: "0px",
+          height: "64px",
+          alignContent: "center",
+        }}
+      >
+        {" "}
+        {/* Set a fixed height for the AppBar */}
         <Toolbar>
           <IconButton edge="start" color="inherit" aria-label="menu">
             <MenuBook />
