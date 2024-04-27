@@ -11,8 +11,7 @@ import {
   MenuItem,
   Avatar,
 } from "@mui/material";
-import { Logout } from "@mui/icons-material"; // Import logout icon from MUI
-import HomeIcon from "@mui/icons-material/Home";
+import { Logout, MenuBook } from "@mui/icons-material"; // Import icons from MUI
 
 const Header = () => {
   const [loggedIn, setLoggedIn] = useState(false);
@@ -47,13 +46,31 @@ const Header = () => {
 
   return (
     <div className="header-container" style={{ display: "inline-block" }}>
-      <AppBar style={{ display: "block", position: "fixed", top: "0px" }}>
+      <AppBar
+        style={{
+          display: "block",
+          position: "fixed",
+          top: "0px",
+          height: "75px",
+          alignContent: "center",
+        }}
+      >
+        {" "}
+        {/* Set a fixed height for the AppBar */}
         <Toolbar>
-            <Typography variant="h6" component="div" sx={{ flexGrow: 1 }}>
-              Bookworm
-            </Typography>
-          {loggedIn ? (
-          <>
+          <IconButton edge="start" color="inherit" aria-label="menu">
+            <MenuBook />
+          </IconButton>
+          <Typography
+            variant="h6"
+            component={Link}
+            to={loggedIn ? "/dashboard" : "/"}
+            style={{ color: "inherit", textDecoration: "none", flexGrow: 1 }}
+          >
+            Bookworm
+          </Typography>
+          {loggedIn && (
+            <>
               <Select
                 value={username}
                 displayEmpty
@@ -64,10 +81,6 @@ const Header = () => {
                   </div>
                 )}
               >
-              <Link to="/dashboard" style={{ textDecoration: "none", color: "inherit" }}>
-                <Typography variant="h6" component="div" sx={{ flexGrow: 1 }}>
-                  Bookworm
-                </Typography>
                 <MenuItem value={username} disabled>
                   <Avatar sx={{ bgcolor: "primary.main", mr: 1 }}></Avatar>
                   {username}
@@ -78,7 +91,8 @@ const Header = () => {
                 </MenuItem>
               </Select>
             </>
-          ) : (
+          )}
+          {!loggedIn && (
             <div>
               <Button
                 className="button"
@@ -105,3 +119,4 @@ const Header = () => {
 };
 
 export default Header;
+
