@@ -151,7 +151,6 @@ export default function Dashboard() {
           <Button
             variant="contained"
             color="primary"
-            style={{ backgroundColor: "#007BFF" }}
             onClick={() => {
               setShowEditForm(bookId);
               setEditTitle("");
@@ -162,7 +161,6 @@ export default function Dashboard() {
           <Button
             variant="contained"
             color="secondary"
-            style={{ backgroundColor: "#6C757D" }}
             onClick={() => handleDeleteBook(bookId)}
           >
             Delete Book
