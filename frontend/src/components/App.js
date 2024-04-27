@@ -34,22 +34,6 @@ const lightTheme = createTheme({
 
 const darkTheme = createTheme({
   palette: {
-    type: 'light',
-    primary: {
-      main: "#00ABE4",
-      text: "#365486",
-    },
-    secondary: {
-      main: "#FFFFFF",
-    },
-  },
-  typography: {
-    fontFamily: ["Roboto", "Arial", "sans-serif"].join(","),
-  },
-});
-
-const darkTheme = createTheme({
-  palette: {
     type: 'dark',
     primary: {
       main: '#4dabf7',
