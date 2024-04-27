@@ -17,7 +17,7 @@ import Editor from "./Editor";
 import Dashboard from "./Dashboard";
 import "./App.css";
 
-const theme = createTheme({
+const lightTheme = createTheme({
   palette: {
     primary: {
       main: "#00ABE4",
@@ -32,9 +32,44 @@ const theme = createTheme({
   },
 });
 
+const darkTheme = createTheme({
+  palette: {
+    type: 'light',
+    primary: {
+      main: "#00ABE4",
+      text: "#365486",
+    },
+    secondary: {
+      main: "#FFFFFF",
+    },
+  },
+  typography: {
+    fontFamily: ["Roboto", "Arial", "sans-serif"].join(","),
+  },
+});
+
+const darkTheme = createTheme({
+  palette: {
+    type: 'dark',
+    primary: {
+      main: '#4dabf7',
+      text: '#e9ecef',
+    },
+    secondary: {
+      main: '#cbd3da',
+    },
+    background: {
+      default: '#50557c',
+    },
+  },
+  typography: {
+    fontFamily: ["Roboto", "Arial", "sans-serif"].join(","),
+  },
+});
+
 export default function App() {
   return (
-    <ThemeProvider theme={theme}>
+    <ThemeProvider theme={lightTheme}>
       <Router>
         <Routes>
           <Route path="/" element={<Home />} />
